@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: #0a0a0a;
+            padding: 20px;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #141414;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.05);
+            animation: containerFadeIn 0.8s ease-out;
+        }
+        
+        @keyframes containerFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .date-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 20px;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            min-height: 130px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .date-nav:hover {
+            box-shadow: 0 4px 20px rgba(52, 152, 219, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .date-nav button {
+            padding: 12px 24px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 100px;
+            min-height: 50px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .date-nav button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        .date-nav button:hover::before {
+            left: 100%;
+        }
+        
+        .date-nav button:hover {
+            background-color: #2980b9;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4);
+        }
+        
+        .date-nav .date-info {
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .date-nav .current-time {
+            font-size: 20px;
+            font-weight: 600;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            display: inline-block;
+            margin: 0 auto;
+        }
+        
+        .date-nav .current-time::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #3498db;
+            transition: width 0.3s ease;
+        }
+        
+        .date-nav .current-time:hover {
+            color: #3498db;
+        }
+        
+        .date-nav .current-time:hover::after {
+            width: 100%;
+        }
+        
+        .date-nav .current-date-week {
+            font-size: 15px;
+            color: #b0b0b0;
+            margin-top: 8px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            display: inline-block;
+            margin: 8px auto 0;
+        }
+        
+        .date-nav .current-date-week::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: #3498db;
+            transition: width 0.3s ease;
+        }
+        
+        .date-nav .current-date-week:hover {
+            color: #3498db;
+        }
+        
+        .date-nav .current-date-week:hover::after {
+            width: 100%;
+        }
+        
+        .weekday {
+            text-align: center;
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            cursor: pointer;
+            color: #ffffff;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .weekday:hover {
+            color: #3498db;
+            transform: scale(1.03);
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .course-list {
+            margin-top: 24px;
+        }
+        
+        .course-item {
+            display: flex;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            margin-bottom: 18px;
+            background-color: #1e1e1e;
+            min-height: 130px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: courseItemFadeIn 0.4s ease-out forwards;
+        }
+        
+        .course-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(to bottom, #3498db, #2980b9);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .course-item.active::before {
+            opacity: 1;
+            background: linear-gradient(to bottom, #3498db, #9b59b6, #e74c3c, #f39c12);
+            animation: borderGradient 2s ease-in-out infinite;
+        }
+        
+        .course-item.active::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(52, 152, 219, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shimmer 2s ease-in-out infinite;
+        }
+        
+        .course-item.active {
+            border-color: #3498db;
+            box-shadow: 0 8px 24px rgba(52, 152, 219, 0.35), 0 0 30px rgba(155, 89, 182, 0.2);
+            transform: translateY(-3px) scale(1.01);
+        }
+        
+        @keyframes courseItemFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        
+        @keyframes borderGradient {
+            0% {
+                background: linear-gradient(to bottom, #3498db, #9b59b6, #e74c3c, #f39c12);
+            }
+            25% {
+                background: linear-gradient(to bottom, #f39c12, #3498db, #9b59b6, #e74c3c);
+            }
+            50% {
+                background: linear-gradient(to bottom, #e74c3c, #f39c12, #3498db, #9b59b6);
+            }
+            75% {
+                background: linear-gradient(to bottom, #9b59b6, #e74c3c, #f39c12, #3498db);
+            }
+            100% {
+                background: linear-gradient(to bottom, #3498db, #9b59b6, #e74c3c, #f39c12);
+            }
+        }
+        
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+                opacity: 0;
+            }
+            50% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateX(100%) translateY(100%) rotate(45deg);
+                opacity: 0;
+            }
+        }
+        
+        .course-time {
+            width: 170px;
+            padding: 20px;
+            border-right: 1px solid rgba(255,255,255,0.1);
+            font-weight: 600;
+            background-color: #232323;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+        
+        .course-item:hover .course-time {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .course-info {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .course-name {
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+        
+        .course-item:hover .course-name {
+            color: #3498db;
+        }
+        
+        .course-detail {
+            font-size: 14px;
+            color: #b0b0b0;
+            line-height: 1.4;
+            margin-top: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .course-detail br {
+            line-height: 1.4;
+        }
+        
+        .no-course {
+            text-align: center;
+            font-size: 22px;
+            color: #999;
+            padding: 80px 20px;
+            background-color: #1e1e1e;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            animation: fadeIn 0.6s ease-out;
+            transition: all 0.3s ease;
+        }
+        
+        .no-course:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+            color: #3498db;
+            transform: scale(1.02);
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -60%) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+            }
+        }
+        
+        /* 模态框按钮悬停效果 */
+        #cancelDate, #cancelWeek {
+            padding: 10px 18px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #cancelDate::before, #cancelWeek::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        #cancelDate:hover::before, #cancelWeek:hover::before {
+            left: 100%;
+        }
+        
+        #cancelDate:hover, #cancelWeek:hover {
+            background-color: #c0392b;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(231, 76, 60, 0.4);
+        }
+        
+        #confirmDate, #confirmWeek {
+            padding: 10px 18px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #confirmDate::before, #confirmWeek::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.6s ease;
+        }
+        
+        #confirmDate:hover::before, #confirmWeek:hover::before {
+            left: 100%;
+        }
+        
+        #confirmDate:hover, #confirmWeek:hover {
+            background-color: #229954;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(39, 174, 96, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="date-nav">
+            <button id="prevDay">昨天</button>
+            <div class="date-info">
+                <div class="current-time" id="currentTime" style="cursor: pointer;">点击刷新</div>
+                <div class="current-date-week" id="currentDateWeek" style="cursor: pointer;">点击选择日期</div>
+            </div>
+            <button id="nextDay">明天</button>
+        </div>
+        <div class="weekday" id="weekday"></div>
+        <div class="course-list" id="courseList"></div>
+    </div>
+    
+    <!-- 日期选择器模态框 -->
+    <div id="dateModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index: 1000; backdrop-filter: blur(8px); transition: all 0.3s ease;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #1e1e1e; padding: 25px; border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); min-width: 320px; animation: modalFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.1);">
+            <h3 style="margin-bottom: 20px; text-align: center; color: #ffffff; font-weight: 600;">选择日期</h3>
+            <div id="calendar" style="margin-bottom: 20px;"></div>
+            <div style="display: flex; justify-content: space-between;">
+                <button id="cancelDate">取消</button>
+                <button id="confirmDate">确认</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 周数选择器模态框 -->
+    <div id="weekModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index: 1000; backdrop-filter: blur(8px); transition: all 0.3s ease;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #1e1e1e; padding: 25px; border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); min-width: 320px; animation: modalFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.1);">
+            <h3 style="margin-bottom: 20px; text-align: center; color: #ffffff; font-weight: 600;">选择周数</h3>
+            <div id="weekSelector" style="margin-bottom: 20px;"></div>
+            <div style="display: flex; justify-content: space-between;">
+                <button id="cancelWeek">取消</button>
+                <button id="confirmWeek">确认</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 课程数据
+        const courseData = {
+            'Monday': {
+                '1-2': [
+                    {
+                        name: '思想道德与法治II',
+                        location: 'Q1-325',
+                        teacher: '吴秋梅',
+                        weeks: '2-5周,7-9周,11-15周'
+                    },
+                    {
+                        name: '形势与政策Ⅱ',
+                        location: 'Q1-325',
+                        teacher: '吴秋梅',
+                        weeks: '16-18周'
+                    }
+                ],
+                '3-4': [
+                    {
+                        name: '电子技术',
+                        location: 'Q1-415',
+                        teacher: '韩杨',
+                        weeks: '2-5周,7-9周,11-14周'
+                    }
+                ],
+                '5-6': [
+                    {
+                        name: '电子技术',
+                        location: 'Q1-408',
+                        teacher: '韩杨',
+                        weeks: '17-18周'
+                    }
+                ],
+                '5-8': [
+                    {
+                        name: '计算机网络技术',
+                        location: 'Q2-420',
+                        teacher: '林治',
+                        weeks: '2-5周,7-9周,11-16周'
+                    }
+                ],
+                '9-10': [
+                    {
+                        name: '大学生心理健康II',
+                        location: 'Q1-122',
+                        teacher: '张永强',
+                        weeks: '2-5周'
+                    }
+                ]
+            },
+            'Tuesday': {
+                '1-2': [
+                    {
+                        name: '电子技术',
+                        location: 'Q1-408',
+                        teacher: '韩杨',
+                        weeks: '3-10周'
+                    },
+                    {
+                        name: '电子技术',
+                        location: 'Q3-313',
+                        teacher: '韩杨',
+                        weeks: '11-18周'
+                    }
+                ],
+                '3-4': [
+                    {
+                        name: '职业英语II',
+                        location: 'Q2-604',
+                        teacher: '豆玲玲',
+                        weeks: '2-4周'
+                    },
+                    {
+                        name: '创新创业基础',
+                        location: 'Q2-602',
+                        teacher: '温豪',
+                        weeks: '10-17周'
+                    },
+                    {
+                        name: '形势与政策Ⅱ',
+                        location: 'Q1-414',
+                        teacher: '吴秋梅',
+                        weeks: '18周'
+                    }
+                ],
+                '5-6': [
+                    {
+                        name: '计算机网络技术',
+                        location: 'Q2-420',
+                        teacher: '林治',
+                        weeks: '18周'
+                    }
+                ],
+                '5-8': [
+                    {
+                        name: '计算机网络技术',
+                        location: 'Q2-420',
+                        teacher: '林治',
+                        weeks: '16-17周'
+                    }
+                ],
+                '9-12': [
+                    {
+                        name: '传感器技术',
+                        location: 'Q3-324',
+                        teacher: '邓亚雄',
+                        weeks: '2-10周'
+                    }
+                ]
+            },
+            'Wednesday': {
+                '9-10': [
+                    {
+                        name: '职业生涯规划教育',
+                        location: 'Q2-614',
+                        teacher: '陈舒婷',
+                        weeks: '2-9周'
+                    },
+                    {
+                        name: '电子技术',
+                        location: 'Q2-213',
+                        teacher: '韩杨',
+                        weeks: '10-16周'
+                    }
+                ]
+            },
+            'Thursday': {
+                '1-2': [
+                    {
+                        name: '职业英语II',
+                        location: 'Q2-602',
+                        teacher: '豆玲玲',
+                        weeks: '2-18周'
+                    }
+                ],
+                '7-8': [
+                    {
+                        name: '体能训练',
+                        location: 'Q-新田径场',
+                        teacher: '郑文迪',
+                        weeks: '2-13周'
+                    }
+                ]
+            }
+        };
+        
+        // 星期对应关系
+        const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const chineseWeekdays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+        
+        // 学期开始日期（第二学期）
+        const semesterStart = new Date(2026, 2, 2); // 2026年3月2日（调整为符合用户预期的开始日期）
+        
+        // 当前日期（用于导航和课程显示）
+        let currentDate = new Date(); // 使用当前实时时间
+        
+        // 计算周次
+        function calculateWeekNumber(date) {
+            // 确保日期是星期一为一周的开始
+            const dayOfWeek = date.getDay();
+            // 调整到本周的星期一
+            const mondayOfWeek = new Date(date);
+            mondayOfWeek.setDate(date.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+            
+            // 计算与学期开始日期的天数差
+            const timeDiff = mondayOfWeek.getTime() - semesterStart.getTime();
+            const dayDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            // 计算周次（从1开始）
+            return Math.max(1, Math.ceil((dayDiff + 1) / 7));
+        }
+        
+        // 检查课程是否在当前周
+        function isCourseInCurrentWeek(course, weekNumber) {
+            const weeks = course.weeks;
+            // 解析周数范围
+            const weekRanges = weeks.split(',');
+            for (const range of weekRanges) {
+                if (range.includes('-')) {
+                    // 处理范围，如 "2-5周"
+                    const [start, end] = range.replace('周', '').split('-').map(Number);
+                    if (weekNumber >= start && weekNumber <= end) {
+                        return true;
+                    }
+                } else {
+                    // 处理单个周，如 "18周"
+                    const week = parseInt(range.replace('周', ''));
+                    if (weekNumber === week) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        
+        // 更新实时时间
+        function updateRealTime() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const day = now.getDate();
+            let hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            
+            // 计算上午/下午
+            let period;
+            if (hours === 12) {
+                period = '下午';
+            } else if (hours >= 12) {
+                period = '下午';
+            } else {
+                period = '上午';
+            }
+            // 转换为12小时制
+            hours = hours % 12;
+            hours = hours === 0 ? 12 : hours;
+            const hours12 = hours.toString().padStart(2, '0');
+            
+            // 第一行：日期，第二行：时间
+            const timeStr = `${year}年${month}月${day}日<br>${period}${hours12}:${minutes}:${seconds}`;
+            document.getElementById('currentTime').innerHTML = timeStr;
+        }
+        
+        // 更新日期显示（用于导航和课程）
+        function updateDateDisplay() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth() + 1;
+            const day = currentDate.getDate();
+            
+            // 第二行：日期和周数
+            const dateWeekStr = `${year}年${month}月${day}日 第${calculateWeekNumber(currentDate)}周`;
+            document.getElementById('currentDateWeek').textContent = dateWeekStr;
+            
+            const weekdayIndex = currentDate.getDay();
+            document.getElementById('weekday').textContent = chineseWeekdays[weekdayIndex];
+            
+            updateCourses(weekdayIndex);
+        }
+        
+        // 节次时间对应表
+        const timeSlotDetails = {
+            '1-2': '08:30-09:50',
+            '3-4': '10:10-11:30',
+            '5-6': '13:50-15:10',
+            '5-8': '13:50-16:40',
+            '7-8': '15:20-16:40',
+            '9-10': '18:00-19:20',
+            '9-12': '18:00-20:50'
+        };
+        
+        // 检查当前时间是否与课程时间段重叠
+        function isCurrentTimeInCourse(timeSlot) {
+            const now = new Date();
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            const currentTime = currentHour * 60 + currentMinute;
+            
+            // 根据时间段获取开始和结束时间
+            const timeRange = timeSlotDetails[timeSlot];
+            if (!timeRange) return false;
+            
+            const [startTime, endTime] = timeRange.split('-');
+            const [startHour, startMinute] = startTime.split(':').map(Number);
+            const [endHour, endMinute] = endTime.split(':').map(Number);
+            
+            const startTimeMinutes = startHour * 60 + startMinute;
+            const endTimeMinutes = endHour * 60 + endMinute;
+            
+            return currentTime >= startTimeMinutes && currentTime <= endTimeMinutes;
+        }
+        
+        // 更新课程显示
+        function updateCourses(weekdayIndex) {
+            const weekday = weekdays[weekdayIndex];
+            const courseList = document.getElementById('courseList');
+            courseList.innerHTML = '';
+            
+            // 计算当前周次
+            const currentWeek = calculateWeekNumber(currentDate);
+            
+            let hasCourses = false;
+            
+            if (courseData[weekday]) {
+                const timeSlots = ['1-2', '3-4', '5-6', '5-8', '7-8', '9-10', '9-12'];
+                
+                timeSlots.forEach(timeSlot => {
+                    if (courseData[weekday][timeSlot]) {
+                        // 过滤当前周的课程
+                        const currentWeekCourses = courseData[weekday][timeSlot].filter(course => 
+                            isCourseInCurrentWeek(course, currentWeek)
+                        );
+                        
+                        if (currentWeekCourses.length > 0) {
+                            hasCourses = true;
+                            const courseItem = document.createElement('div');
+                            courseItem.className = 'course-item';
+                            
+                            // 检查当前时间是否与课程时间段重叠
+                            if (isCurrentTimeInCourse(timeSlot)) {
+                                courseItem.classList.add('active');
+                            }
+                            
+                            // 时间列
+                            const timeElement = document.createElement('div');
+                            timeElement.className = 'course-time';
+                            timeElement.innerHTML = `${timeSlot}节<br>(${timeSlotDetails[timeSlot]})`;
+                            courseItem.appendChild(timeElement);
+                            
+                            // 课程信息列
+                            const infoElement = document.createElement('div');
+                            infoElement.className = 'course-info';
+                            
+                            currentWeekCourses.forEach(course => {
+                                const nameElement = document.createElement('div');
+                                nameElement.className = 'course-name';
+                                nameElement.textContent = course.name;
+                                infoElement.appendChild(nameElement);
+                                
+                                const detailElement = document.createElement('div');
+                                detailElement.className = 'course-detail';
+                                detailElement.innerHTML = `上课地点：${course.location}<br>教师：${course.teacher}`;
+                                infoElement.appendChild(detailElement);
+                            });
+                            
+                            courseItem.appendChild(infoElement);
+                            courseList.appendChild(courseItem);
+                        }
+                    }
+                });
+            }
+            
+            // 如果没有课程，显示友好提示
+            if (!hasCourses) {
+                const noCourseElement = document.createElement('div');
+                noCourseElement.className = 'no-course';
+                noCourseElement.textContent = '今天没课，好好休息！';
+                courseList.appendChild(noCourseElement);
+            }
+        }
+        
+        // 每1分钟更新一次课程状态
+        setInterval(updateCourses, 60000);
+        
+        // 事件监听
+        document.getElementById('prevDay').addEventListener('click', function() {
+            currentDate.setDate(currentDate.getDate() - 1);
+            updateDateDisplay();
+        });
+        
+        document.getElementById('nextDay').addEventListener('click', function() {
+            currentDate.setDate(currentDate.getDate() + 1);
+            updateDateDisplay();
+        });
+        
+        // 点击实时时间刷新网站
+        document.getElementById('currentTime').addEventListener('click', function() {
+            location.reload();
+        });
+        
+        // 日历相关变量
+        let selectedDate = new Date();
+        let currentCalendarDate = new Date();
+        
+        // 生成日历
+        function generateCalendar(date) {
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = '';
+            
+            // 月份导航
+            const nav = document.createElement('div');
+            nav.style.display = 'flex';
+            nav.style.justifyContent = 'space-between';
+            nav.style.alignItems = 'center';
+            nav.style.marginBottom = '15px';
+            
+            const prevBtn = document.createElement('button');
+            prevBtn.textContent = '‹';
+            prevBtn.style.padding = '10px 14px';
+            prevBtn.style.border = '1px solid rgba(255,255,255,0.1)';
+            prevBtn.style.borderRadius = '8px';
+            prevBtn.style.cursor = 'pointer';
+            prevBtn.style.backgroundColor = '#232323';
+            prevBtn.style.color = '#ffffff';
+            prevBtn.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+            prevBtn.style.position = 'relative';
+            prevBtn.style.overflow = 'hidden';
+            prevBtn.addEventListener('click', function() {
+                currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
+                generateCalendar(currentCalendarDate);
+            });
+            
+            prevBtn.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#3498db';
+                this.style.transform = 'scale(1.05)';
+                this.style.boxShadow = '0 4px 12px rgba(52, 152, 219, 0.3)';
+            });
+            
+            prevBtn.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '#232323';
+                this.style.transform = 'scale(1)';
+                this.style.boxShadow = 'none';
+            });
+            
+            const monthYear = document.createElement('h4');
+            monthYear.textContent = `${date.getFullYear()}年${date.getMonth() + 1}月`;
+            monthYear.style.margin = '0';
+            monthYear.style.color = '#ffffff';
+            monthYear.style.fontWeight = '600';
+            
+            const nextBtn = document.createElement('button');
+            nextBtn.textContent = '›';
+            nextBtn.style.padding = '10px 14px';
+            nextBtn.style.border = '1px solid rgba(255,255,255,0.1)';
+            nextBtn.style.borderRadius = '8px';
+            nextBtn.style.cursor = 'pointer';
+            nextBtn.style.backgroundColor = '#232323';
+            nextBtn.style.color = '#ffffff';
+            nextBtn.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+            nextBtn.style.position = 'relative';
+            nextBtn.style.overflow = 'hidden';
+            nextBtn.addEventListener('click', function() {
+                currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
+                generateCalendar(currentCalendarDate);
+            });
+            
+            nextBtn.addEventListener('mouseenter', function() {
+                this.style.backgroundColor = '#3498db';
+                this.style.transform = 'scale(1.05)';
+                this.style.boxShadow = '0 4px 12px rgba(52, 152, 219, 0.3)';
+            });
+            
+            nextBtn.addEventListener('mouseleave', function() {
+                this.style.backgroundColor = '#232323';
+                this.style.transform = 'scale(1)';
+                this.style.boxShadow = 'none';
+            });
+            
+            nav.appendChild(prevBtn);
+            nav.appendChild(monthYear);
+            nav.appendChild(nextBtn);
+            calendar.appendChild(nav);
+            
+            // 星期标题
+            const weekdays = ['一', '二', '三', '四', '五', '六', '日'];
+            const weekRow = document.createElement('div');
+            weekRow.style.display = 'grid';
+            weekRow.style.gridTemplateColumns = 'repeat(7, 1fr)';
+            weekRow.style.textAlign = 'center';
+            weekRow.style.fontWeight = '600';
+            weekRow.style.marginBottom = '10px';
+            
+            weekdays.forEach(day => {
+                const dayEl = document.createElement('div');
+                dayEl.textContent = day;
+                dayEl.style.color = '#ffffff';
+                dayEl.style.padding = '10px';
+                dayEl.style.backgroundColor = '#232323';
+                dayEl.style.borderRadius = '6px';
+                dayEl.style.border = '1px solid rgba(255,255,255,0.1)';
+                weekRow.appendChild(dayEl);
+            });
+            calendar.appendChild(weekRow);
+            
+            // 日期网格
+            const daysGrid = document.createElement('div');
+            daysGrid.style.display = 'grid';
+            daysGrid.style.gridTemplateColumns = 'repeat(7, 1fr)';
+            daysGrid.style.gridTemplateRows = 'repeat(6, 1fr)';
+            daysGrid.style.gap = '6px';
+            daysGrid.style.height = '260px';
+            daysGrid.style.minHeight = '260px';
+            
+            // 计算月份的第一天是星期几（0-6，0是星期日）
+            const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+            // 调整为以星期一为一周的开始
+            const adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1;
+            // 计算月份的天数
+            const daysInMonth = new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+            
+            // 添加上个月的日期
+            for (let i = 0; i < adjustedFirstDay; i++) {
+                const dayEl = document.createElement('div');
+                dayEl.style.display = 'flex';
+                dayEl.style.alignItems = 'center';
+                dayEl.style.justifyContent = 'center';
+                dayEl.style.color = '#666';
+                dayEl.style.border = '1px solid rgba(255,255,255,0.1)';
+                dayEl.style.borderRadius = '6px';
+                dayEl.style.aspectRatio = '1';
+                dayEl.style.minHeight = '35px';
+                dayEl.style.backgroundColor = '#1e1e1e';
+                daysGrid.appendChild(dayEl);
+            }
+            
+            // 添加当前月的日期
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayEl = document.createElement('div');
+                dayEl.textContent = i;
+                dayEl.style.display = 'flex';
+                dayEl.style.alignItems = 'center';
+                dayEl.style.justifyContent = 'center';
+                dayEl.style.border = '1px solid rgba(255,255,255,0.1)';
+                dayEl.style.borderRadius = '6px';
+                dayEl.style.cursor = 'pointer';
+                dayEl.style.aspectRatio = '1';
+                dayEl.style.minHeight = '35px';
+                dayEl.style.backgroundColor = '#232323';
+                dayEl.style.color = '#ffffff';
+                dayEl.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                dayEl.style.position = 'relative';
+                
+                // 高亮选中的日期
+                if (i === selectedDate.getDate() && date.getMonth() === selectedDate.getMonth() && date.getFullYear() === selectedDate.getFullYear()) {
+                    dayEl.style.backgroundColor = '#3498db';
+                    dayEl.style.color = 'white';
+                    dayEl.style.transform = 'scale(1.1)';
+                    dayEl.style.boxShadow = '0 4px 12px rgba(52, 152, 219, 0.4)';
+                }
+                
+                // 鼠标悬停效果
+                dayEl.addEventListener('mouseenter', function() {
+                    if (!(i === selectedDate.getDate() && date.getMonth() === selectedDate.getMonth() && date.getFullYear() === selectedDate.getFullYear())) {
+                        this.style.backgroundColor = '#3498db';
+                        this.style.transform = 'scale(1.1)';
+                        this.style.boxShadow = '0 4px 12px rgba(52, 152, 219, 0.4)';
+                    }
+                });
+                
+                dayEl.addEventListener('mouseleave', function() {
+                    if (!(i === selectedDate.getDate() && date.getMonth() === selectedDate.getMonth() && date.getFullYear() === selectedDate.getFullYear())) {
+                        this.style.backgroundColor = '#232323';
+                        this.style.transform = 'scale(1)';
+                        this.style.boxShadow = 'none';
+                    }
+                });
+                
+                // 点击选择日期
+                dayEl.addEventListener('click', function() {
+                    selectedDate = new Date(date.getFullYear(), date.getMonth(), i);
+                    generateCalendar(date);
+                });
+                
+                daysGrid.appendChild(dayEl);
+            }
+            
+            // 添加下个月的日期，确保日历始终是6行7列
+            const totalDays = adjustedFirstDay + daysInMonth;
+            const remainingDays = 42 - totalDays; // 6行7列 = 42个单元格
+            for (let i = 1; i <= remainingDays; i++) {
+                const dayEl = document.createElement('div');
+                dayEl.style.display = 'flex';
+                dayEl.style.alignItems = 'center';
+                dayEl.style.justifyContent = 'center';
+                dayEl.style.color = '#666';
+                dayEl.style.border = '1px solid rgba(255,255,255,0.1)';
+                dayEl.style.borderRadius = '6px';
+                dayEl.style.aspectRatio = '1';
+                dayEl.style.minHeight = '35px';
+                dayEl.style.backgroundColor = '#1e1e1e';
+                daysGrid.appendChild(dayEl);
+            }
+            
+            calendar.appendChild(daysGrid);
+        }
+        
+        // 点击日期显示日期选择器模态框
+        document.getElementById('currentDateWeek').addEventListener('click', function() {
+            const modal = document.getElementById('dateModal');
+            // 设置默认选中日期为当前导航日期
+            selectedDate = new Date(currentDate);
+            currentCalendarDate = new Date(currentDate);
+            // 生成日历
+            generateCalendar(currentCalendarDate);
+            // 显示模态框
+            modal.style.display = 'block';
+        });
+        
+        // 关闭模态框
+        document.getElementById('cancelDate').addEventListener('click', function() {
+            document.getElementById('dateModal').style.display = 'none';
+        });
+        
+        // 确认选择日期
+        document.getElementById('confirmDate').addEventListener('click', function() {
+            currentDate = selectedDate;
+            updateDateDisplay();
+            document.getElementById('dateModal').style.display = 'none';
+        });
+        
+        // 点击模态框外部关闭
+        window.addEventListener('click', function(event) {
+            const dateModal = document.getElementById('dateModal');
+            const weekModal = document.getElementById('weekModal');
+            if (event.target === dateModal) {
+                dateModal.style.display = 'none';
+            }
+            if (event.target === weekModal) {
+                weekModal.style.display = 'none';
+            }
+        });
+        
+        // 周数选择相关变量
+        let selectedWeek = 1;
+        
+        // 生成周数选择器
+        function generateWeekSelector() {
+            const weekSelector = document.getElementById('weekSelector');
+            weekSelector.innerHTML = '';
+            
+            // 生成1-18周的选择按钮
+            const weeksGrid = document.createElement('div');
+            weeksGrid.style.display = 'grid';
+            weeksGrid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+            weeksGrid.style.gap = '12px';
+            
+            for (let i = 1; i <= 18; i++) {
+                const weekBtn = document.createElement('button');
+                weekBtn.textContent = `第${i}周`;
+                weekBtn.style.padding = '10px 14px';
+                weekBtn.style.border = '1px solid rgba(255,255,255,0.1)';
+                weekBtn.style.borderRadius = '8px';
+                weekBtn.style.cursor = 'pointer';
+                weekBtn.style.minWidth = '80px';
+                weekBtn.style.height = '40px';
+                weekBtn.style.display = 'flex';
+                weekBtn.style.alignItems = 'center';
+                weekBtn.style.justifyContent = 'center';
+                weekBtn.style.fontSize = '14px';
+                weekBtn.style.backgroundColor = '#232323';
+                weekBtn.style.color = '#ffffff';
+                weekBtn.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+                weekBtn.style.position = 'relative';
+                weekBtn.style.overflow = 'hidden';
+                
+                // 高亮选中的周数
+                if (i === selectedWeek) {
+                    weekBtn.style.backgroundColor = '#3498db';
+                    weekBtn.style.color = 'white';
+                    weekBtn.style.transform = 'scale(1.05)';
+                    weekBtn.style.boxShadow = '0 4px 12px rgba(52, 152, 219, 0.4)';
+                }
+                
+                // 鼠标悬停效果
+                weekBtn.addEventListener('mouseenter', function() {
+                    if (i !== selectedWeek) {
+                        this.style.backgroundColor = '#3498db';
+                        this.style.transform = 'scale(1.05)';
+                        this.style.boxShadow = '0 4px 12px rgba(52, 152, 219, 0.4)';
+                    }
+                });
+                
+                weekBtn.addEventListener('mouseleave', function() {
+                    if (i !== selectedWeek) {
+                        this.style.backgroundColor = '#232323';
+                        this.style.transform = 'scale(1)';
+                        this.style.boxShadow = 'none';
+                    }
+                });
+                
+                // 点击选择周数
+                weekBtn.addEventListener('click', function() {
+                    selectedWeek = i;
+                    generateWeekSelector();
+                });
+                
+                weeksGrid.appendChild(weekBtn);
+            }
+            
+            weekSelector.appendChild(weeksGrid);
+        }
+        
+        // 点击星期几显示周数选择器
+        document.getElementById('weekday').addEventListener('click', function() {
+            const modal = document.getElementById('weekModal');
+            // 设置默认选中周数为当前周
+            selectedWeek = calculateWeekNumber(currentDate);
+            // 生成周数选择器
+            generateWeekSelector();
+            // 显示模态框
+            modal.style.display = 'block';
+        });
+        
+        // 关闭周数选择器
+        document.getElementById('cancelWeek').addEventListener('click', function() {
+            document.getElementById('weekModal').style.display = 'none';
+        });
+        
+        // 确认选择周数
+        document.getElementById('confirmWeek').addEventListener('click', function() {
+            // 计算第selectedWeek周的星期一日期
+            // 学期开始日期是semesterStart（3月2日，星期一）
+            const weeksDiff = selectedWeek - 1;
+            const targetDate = new Date(semesterStart);
+            targetDate.setDate(semesterStart.getDate() + weeksDiff * 7);
+            
+            currentDate = targetDate;
+            updateDateDisplay();
+            document.getElementById('weekModal').style.display = 'none';
+        });
+        
+        // 初始化
+        updateRealTime();
+        updateDateDisplay();
+        
+        // 实时更新时间（只更新实时时间显示，不影响导航日期）
+        setInterval(updateRealTime, 1000);
+    </script>
+</body>
+</html>

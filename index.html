@@ -388,9 +388,190 @@
             }
         }
         
-        /* 模态框按钮悬停效果 */
+        /* 媒体查询 - 移动端适配 */
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 10px;
+                font-size: 14px;
+            }
+            
+            .container {
+                padding: 16px;
+                border-radius: 8px;
+            }
+            
+            .date-nav {
+                flex-direction: column;
+                padding: 16px;
+                min-height: auto;
+                gap: 12px;
+            }
+            
+            .date-nav button {
+                min-width: 120px;
+                min-height: 48px;
+                padding: 10px 20px;
+                font-size: 16px;
+            }
+            
+            .date-nav .date-info {
+                margin: 10px 0;
+            }
+            
+            .date-nav .current-time {
+                font-size: 18px;
+            }
+            
+            .date-nav .current-date-week {
+                font-size: 14px;
+            }
+            
+            .weekday {
+                font-size: 20px;
+                padding: 10px;
+                margin-bottom: 20px;
+            }
+            
+            .course-item {
+                flex-direction: column;
+                min-height: auto;
+            }
+            
+            .course-time {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                padding: 16px;
+            }
+            
+            .course-info {
+                padding: 16px;
+            }
+            
+            .course-name {
+                font-size: 16px;
+            }
+            
+            .course-detail {
+                font-size: 13px;
+            }
+            
+            .no-course {
+                font-size: 18px;
+                padding: 60px 16px;
+            }
+            
+            /* 模态框适配 */
+            #dateModal > div,
+            #weekModal > div {
+                min-width: 90%;
+                max-width: 320px;
+                padding: 20px;
+            }
+            
+            /* 日历适配 */
+            #calendar .days-grid {
+                height: 240px;
+                min-height: 240px;
+            }
+            
+            /* 周数选择器适配 */
+            #weekSelector {
+                max-height: 300px;
+                overflow-y: auto;
+            }
+            
+            #weekSelector .weeks-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media screen and (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                padding: 12px;
+            }
+            
+            .date-nav button {
+                min-width: 100px;
+                min-height: 44px;
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+            
+            .date-nav .current-time {
+                font-size: 16px;
+            }
+            
+            .weekday {
+                font-size: 18px;
+            }
+            
+            .course-time {
+                padding: 12px;
+            }
+            
+            .course-info {
+                padding: 12px;
+            }
+            
+            .course-name {
+                font-size: 15px;
+            }
+            
+            .no-course {
+                font-size: 16px;
+                padding: 40px 12px;
+            }
+        }
+        
+        /* 横屏适配 */
+        @media screen and (orientation: landscape) and (max-height: 500px) {
+            .date-nav {
+                flex-direction: row;
+                min-height: 100px;
+            }
+            
+            .course-item {
+                flex-direction: row;
+            }
+            
+            .course-time {
+                width: 120px;
+                border-right: 1px solid rgba(255,255,255,0.1);
+                border-bottom: none;
+            }
+        }
+        
+        /* 触摸设备优化 */
+        @media (hover: none) and (pointer: coarse) {
+            .date-nav button,
+            .course-item,
+            .weekday,
+            #cancelDate,
+            #confirmDate,
+            #cancelWeek,
+            #confirmWeek {
+                touch-action: manipulation;
+            }
+            
+            /* 增大触摸区域 */
+            .date-nav button,
+            #cancelDate,
+            #confirmDate,
+            #cancelWeek,
+            #confirmWeek {
+                min-height: 48px;
+                min-width: 80px;
+            }
+        }
+        
+        /* 模态框按钮样式 */
         #cancelDate, #cancelWeek {
-            padding: 10px 18px;
+            padding: 12px 20px;
             background-color: #e74c3c;
             color: white;
             border: none;
@@ -399,6 +580,9 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            min-height: 44px;
+            min-width: 80px;
+            font-size: 14px;
         }
         
         #cancelDate::before, #cancelWeek::before {
@@ -423,7 +607,7 @@
         }
         
         #confirmDate, #confirmWeek {
-            padding: 10px 18px;
+            padding: 12px 20px;
             background-color: #27ae60;
             color: white;
             border: none;
@@ -432,6 +616,9 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            min-height: 44px;
+            min-width: 80px;
+            font-size: 14px;
         }
         
         #confirmDate::before, #confirmWeek::before {
@@ -839,18 +1026,26 @@
         setInterval(updateCourses, 60000);
         
         // 事件监听
-        document.getElementById('prevDay').addEventListener('click', function() {
+        function addTouchEvent(element, callback) {
+            element.addEventListener('click', callback);
+            element.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                callback(e);
+            });
+        }
+        
+        addTouchEvent(document.getElementById('prevDay'), function() {
             currentDate.setDate(currentDate.getDate() - 1);
             updateDateDisplay();
         });
         
-        document.getElementById('nextDay').addEventListener('click', function() {
+        addTouchEvent(document.getElementById('nextDay'), function() {
             currentDate.setDate(currentDate.getDate() + 1);
             updateDateDisplay();
         });
         
         // 点击实时时间刷新网站
-        document.getElementById('currentTime').addEventListener('click', function() {
+        addTouchEvent(document.getElementById('currentTime'), function() {
             location.reload();
         });
         
@@ -1061,7 +1256,7 @@
         }
         
         // 点击日期显示日期选择器模态框
-        document.getElementById('currentDateWeek').addEventListener('click', function() {
+        addTouchEvent(document.getElementById('currentDateWeek'), function() {
             const modal = document.getElementById('dateModal');
             // 设置默认选中日期为当前导航日期
             selectedDate = new Date(currentDate);
@@ -1073,19 +1268,19 @@
         });
         
         // 关闭模态框
-        document.getElementById('cancelDate').addEventListener('click', function() {
+        addTouchEvent(document.getElementById('cancelDate'), function() {
             document.getElementById('dateModal').style.display = 'none';
         });
         
         // 确认选择日期
-        document.getElementById('confirmDate').addEventListener('click', function() {
+        addTouchEvent(document.getElementById('confirmDate'), function() {
             currentDate = selectedDate;
             updateDateDisplay();
             document.getElementById('dateModal').style.display = 'none';
         });
         
         // 点击模态框外部关闭
-        window.addEventListener('click', function(event) {
+        function handleModalClose(event) {
             const dateModal = document.getElementById('dateModal');
             const weekModal = document.getElementById('weekModal');
             if (event.target === dateModal) {
@@ -1094,7 +1289,10 @@
             if (event.target === weekModal) {
                 weekModal.style.display = 'none';
             }
-        });
+        }
+        
+        window.addEventListener('click', handleModalClose);
+        window.addEventListener('touchstart', handleModalClose);
         
         // 周数选择相关变量
         let selectedWeek = 1;
@@ -1167,7 +1365,7 @@
         }
         
         // 点击星期几显示周数选择器
-        document.getElementById('weekday').addEventListener('click', function() {
+        addTouchEvent(document.getElementById('weekday'), function() {
             const modal = document.getElementById('weekModal');
             // 设置默认选中周数为当前周
             selectedWeek = calculateWeekNumber(currentDate);
@@ -1178,12 +1376,12 @@
         });
         
         // 关闭周数选择器
-        document.getElementById('cancelWeek').addEventListener('click', function() {
+        addTouchEvent(document.getElementById('cancelWeek'), function() {
             document.getElementById('weekModal').style.display = 'none';
         });
         
         // 确认选择周数
-        document.getElementById('confirmWeek').addEventListener('click', function() {
+        addTouchEvent(document.getElementById('confirmWeek'), function() {
             // 计算第selectedWeek周的星期一日期
             // 学期开始日期是semesterStart（3月2日，星期一）
             const weeksDiff = selectedWeek - 1;

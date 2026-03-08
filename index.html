@@ -522,14 +522,38 @@
             #dateModal > div,
             #weekModal > div {
                 min-width: 90%;
-                max-width: 320px;
-                padding: 20px;
+                max-width: 90%;
+                padding: 16px;
+                box-sizing: border-box;
             }
             
             /* 日历适配 */
-            #calendar .days-grid {
-                height: 240px;
-                min-height: 240px;
+            #calendar {
+                width: 100%;
+                overflow-x: auto;
+            }
+            
+            #calendar .nav {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            #calendar .weekRow {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 4px;
+            }
+            
+            #calendar .daysGrid {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 4px;
+                height: 220px;
+                min-height: 220px;
+            }
+            
+            /* 日期单元格适配 */
+            #calendar .daysGrid > div {
+                font-size: 12px;
+                min-height: 30px;
             }
             
             /* 周数选择器适配 */
@@ -1046,7 +1070,7 @@
                             // 时间列
                             const timeElement = document.createElement('div');
                             timeElement.className = 'course-time';
-                            timeElement.innerHTML = `${timeSlot}节 (${timeSlotDetails[timeSlot]})`;
+                            timeElement.innerHTML = `${timeSlot}节<br>(${timeSlotDetails[timeSlot]})`;
                             courseItem.appendChild(timeElement);
                             
                             // 课程信息列
@@ -1222,9 +1246,11 @@
             daysGrid.style.display = 'grid';
             daysGrid.style.gridTemplateColumns = 'repeat(7, 1fr)';
             daysGrid.style.gridTemplateRows = 'repeat(6, 1fr)';
-            daysGrid.style.gap = '6px';
-            daysGrid.style.height = '260px';
-            daysGrid.style.minHeight = '260px';
+            daysGrid.style.gap = '4px';
+            daysGrid.style.height = '220px';
+            daysGrid.style.minHeight = '220px';
+            daysGrid.style.width = '100%';
+            daysGrid.style.boxSizing = 'border-box';
             
             // 计算月份的第一天是星期几（0-6，0是星期日）
             const firstDay = new Date(date.getFullYear(), date.getMonth(), 1).getDay();
@@ -1369,8 +1395,10 @@
             // 生成1-18周的选择按钮
             const weeksGrid = document.createElement('div');
             weeksGrid.style.display = 'grid';
-            weeksGrid.style.gridTemplateColumns = 'repeat(4, 1fr)';
-            weeksGrid.style.gap = '12px';
+            weeksGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+            weeksGrid.style.gap = '8px';
+            weeksGrid.style.width = '100%';
+            weeksGrid.style.boxSizing = 'border-box';
             
             for (let i = 1; i <= 18; i++) {
                 const weekBtn = document.createElement('button');

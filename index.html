@@ -32,6 +32,48 @@
             animation: containerFadeIn 0.8s ease-out;
         }
         
+        /* 移动端整合布局 */
+        @media screen and (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+            
+            /* 日期导航布局 */
+            .date-nav {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 16px;
+                margin-bottom: 16px;
+                gap: 10px;
+            }
+            
+            .date-nav .date-info {
+                text-align: center;
+                margin: 8px 0;
+            }
+            
+            .date-nav .button-container {
+                display: flex;
+                gap: 20px;
+                width: 100%;
+                justify-content: center;
+                margin-top: 10px;
+            }
+            
+            /* 星期和课程整合 */
+            .weekday {
+                margin-bottom: 16px;
+                text-align: center;
+            }
+            
+            .course-item {
+                margin-bottom: 16px;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+        }
+        
         @keyframes containerFadeIn {
             from {
                 opacity: 0;
@@ -400,65 +442,80 @@
                 border-radius: 8px;
             }
             
+            /* 日期导航和内容整合 */
             .date-nav {
                 flex-direction: column;
                 padding: 16px;
                 min-height: auto;
                 gap: 12px;
+                margin-bottom: 16px;
             }
             
             .date-nav button {
-                min-width: 120px;
-                min-height: 48px;
-                padding: 10px 20px;
-                font-size: 16px;
+                min-width: 80px;
+                min-height: 44px;
+                padding: 8px 16px;
+                font-size: 14px;
             }
             
             .date-nav .date-info {
                 margin: 10px 0;
+                text-align: center;
             }
             
             .date-nav .current-time {
-                font-size: 18px;
+                font-size: 16px;
+                line-height: 1.4;
             }
             
             .date-nav .current-date-week {
                 font-size: 14px;
+                margin-top: 8px;
             }
             
+            /* 星期显示 */
             .weekday {
-                font-size: 20px;
+                font-size: 18px;
                 padding: 10px;
-                margin-bottom: 20px;
+                margin-bottom: 16px;
+                text-align: center;
             }
             
+            /* 课程项布局调整 */
             .course-item {
-                flex-direction: column;
+                flex-direction: row;
                 min-height: auto;
+                border-radius: 8px;
+                overflow: hidden;
             }
             
             .course-time {
-                width: 100%;
-                border-right: none;
-                border-bottom: 1px solid rgba(255,255,255,0.1);
-                padding: 16px;
+                width: 100px;
+                border-right: 1px solid rgba(255,255,255,0.1);
+                border-bottom: none;
+                padding: 12px;
+                font-size: 12px;
+                text-align: center;
             }
             
             .course-info {
-                padding: 16px;
+                flex: 1;
+                padding: 12px;
             }
             
             .course-name {
-                font-size: 16px;
+                font-size: 15px;
+                margin-bottom: 8px;
             }
             
             .course-detail {
                 font-size: 13px;
+                line-height: 1.5;
             }
             
             .no-course {
-                font-size: 18px;
-                padding: 60px 16px;
+                font-size: 16px;
+                padding: 40px 12px;
             }
             
             /* 模态框适配 */
@@ -646,12 +703,14 @@
 <body>
     <div class="container">
         <div class="date-nav">
-            <button id="prevDay">昨天</button>
             <div class="date-info">
                 <div class="current-time" id="currentTime" style="cursor: pointer;">点击刷新</div>
                 <div class="current-date-week" id="currentDateWeek" style="cursor: pointer;">点击选择日期</div>
             </div>
-            <button id="nextDay">明天</button>
+            <div class="button-container">
+                <button id="prevDay">昨天</button>
+                <button id="nextDay">明天</button>
+            </div>
         </div>
         <div class="weekday" id="weekday"></div>
         <div class="course-list" id="courseList"></div>
@@ -987,7 +1046,7 @@
                             // 时间列
                             const timeElement = document.createElement('div');
                             timeElement.className = 'course-time';
-                            timeElement.innerHTML = `${timeSlot}节<br>(${timeSlotDetails[timeSlot]})`;
+                            timeElement.innerHTML = `${timeSlot}节 (${timeSlotDetails[timeSlot]})`;
                             courseItem.appendChild(timeElement);
                             
                             // 课程信息列
@@ -1023,7 +1082,12 @@
         }
         
         // 每1分钟更新一次课程状态
-        setInterval(updateCourses, 60000);
+        setInterval(function() {
+            // 更新currentDate为当前实时时间
+            currentDate = new Date();
+            // 更新日期显示和课程
+            updateDateDisplay();
+        }, 60000);
         
         // 事件监听
         function addTouchEvent(element, callback) {

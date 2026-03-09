@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>课程表</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
         * {
             margin: 0;
@@ -18,17 +19,67 @@
             padding: 20px;
             color: #e0e0e0;
             overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* 3D粒子星星背景样式 */
+        :root {
+            --star-min-size: 1px;
+            --star-max-size: 5px;
+            --star-min-opacity: 0.3;
+            --star-max-opacity: 1.0;
+            --star-min-duration: 5s;
+            --star-max-duration: 20s;
+            --star-z-index: -1;
+        }
+        
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: var(--star-z-index);
+            pointer-events: none;
+            perspective: 1200px;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            transform-style: preserve-3d;
+            transition: transform 0.05s ease-out;
+        }
+        
+        /* 镜头摇晃动画 */
+        @keyframes cameraShake {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(-1px, 1px) rotate(0.5deg);
+            }
+            50% {
+                transform: translate(1px, -1px) rotate(-0.5deg);
+            }
+            75% {
+                transform: translate(-1px, -1px) rotate(0.5deg);
+            }
+        }
+        
+        .stars-container {
+            animation: cameraShake 10s ease-in-out infinite;
         }
         
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            background-color: #141414;
             padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.05);
+            background-color: rgba(20, 20, 20, 0.1);
+            backdrop-filter: blur(2px);
             animation: containerFadeIn 0.8s ease-out;
         }
         
@@ -91,7 +142,8 @@
             align-items: center;
             margin-bottom: 24px;
             padding: 20px;
-            background-color: #1e1e1e;
+            background-color: rgba(30, 30, 30, 0.1);
+            backdrop-filter: blur(2px);
             border-radius: 10px;
             min-height: 130px;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -149,6 +201,10 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            background-color: rgba(30, 30, 30, 0.1);
+            backdrop-filter: blur(2px);
+            padding: 10px;
+            border-radius: 8px;
         }
         
         .date-nav .current-time {
@@ -222,6 +278,8 @@
             position: relative;
             padding: 12px;
             border-radius: 8px;
+            background-color: rgba(30, 30, 30, 0.1);
+            backdrop-filter: blur(2px);
         }
         
         .weekday:hover {
@@ -239,7 +297,8 @@
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 10px;
             margin-bottom: 18px;
-            background-color: #1e1e1e;
+            background-color: rgba(30, 30, 30, 0.1);
+            backdrop-filter: blur(2px);
             min-height: 130px;
             transition: all 0.3s ease;
             position: relative;
@@ -331,7 +390,8 @@
             padding: 20px;
             border-right: 1px solid rgba(255,255,255,0.1);
             font-weight: 600;
-            background-color: #232323;
+            background-color: rgba(35, 35, 35, 0.1);
+            backdrop-filter: blur(2px);
             text-align: center;
             display: flex;
             flex-direction: column;
@@ -383,7 +443,8 @@
             font-size: 22px;
             color: #999;
             padding: 80px 20px;
-            background-color: #1e1e1e;
+            background-color: rgba(30, 30, 30, 0.1);
+            backdrop-filter: blur(2px);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 10px;
             animation: fadeIn 0.6s ease-out;
@@ -439,7 +500,6 @@
             
             .container {
                 padding: 16px;
-                border-radius: 8px;
             }
             
             /* 日期导航和内容整合 */
@@ -725,6 +785,8 @@
     </style>
 </head>
 <body>
+    <!-- 星空背景 -->
+    <div class="stars-container" id="starsContainer"></div>
     <div class="container">
         <div class="date-nav">
             <div class="date-info">
@@ -765,6 +827,183 @@
     </div>
     
     <script>
+        // 3D粒子星星背景实现
+        class StarryBackground {
+            constructor() {
+                this.container = document.getElementById('starsContainer');
+                this.stars = [];
+                this.starCount = 150;
+                this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                this.lastTime = 0;
+                this.frameCount = 0;
+                this.optimized = false;
+                
+                // 性能检测
+                this.detectPerformance();
+                this.init();
+            }
+            
+            detectPerformance() {
+                // 检测设备性能，根据性能调整星星数量
+                const isLowEndDevice = this.isMobile || navigator.userAgent.includes('Windows NT 6.1');
+                if (isLowEndDevice) {
+                    this.starCount = 80; // 低配置设备减少星星数量
+                    this.optimized = true;
+                }
+            }
+            
+            init() {
+                this.createStars();
+                this.startAnimation();
+                this.setupEventListeners();
+            }
+            
+            createStars() {
+                // 分批次创建星星，避免一次性创建过多DOM节点
+                let created = 0;
+                const batchSize = 20;
+                
+                const createBatch = () => {
+                    const end = Math.min(created + batchSize, this.starCount);
+                    for (let i = created; i < end; i++) {
+                        this.createStar();
+                    }
+                    created = end;
+                    
+                    if (created < this.starCount) {
+                        requestAnimationFrame(createBatch);
+                    }
+                };
+                
+                createBatch();
+            }
+            
+            createStar() {
+                const star = document.createElement('div');
+                
+                // 随机大小
+                const size = Math.random() * (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--star-max-size')) - parseInt(getComputedStyle(document.documentElement).getPropertyValue('--star-min-size'))) + parseInt(getComputedStyle(document.documentElement).getPropertyValue('--star-min-size'));
+                
+                // 随机位置（考虑视口大小）
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                
+                // 随机透明度
+                const opacity = Math.random() * (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--star-max-opacity')) - parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--star-min-opacity'))) + parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--star-min-opacity'));
+                
+                // 随机速度
+                const duration = Math.random() * (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--star-max-duration')) - parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--star-min-duration'))) + parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--star-min-duration'));
+                
+                // 3D深度（Z轴位置）
+                const z = Math.random() * 1000 - 500; // -500 到 500 的范围
+                
+                // 随机颜色（增加星空层次感）
+                const colors = ['#ffffff', '#f0f0f0', '#e0e0e0', '#d0d0d0'];
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // 设置样式
+                star.className = 'star';
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                star.style.opacity = opacity;
+                star.style.backgroundColor = color;
+                
+                // 存储星星信息
+                const starInfo = {
+                    element: star,
+                    size,
+                    x,
+                    y,
+                    opacity,
+                    duration,
+                    z,
+                    vx: (Math.random() - 0.5) * 0.1,
+                    vy: (Math.random() - 0.5) * 0.1,
+                    vz: (Math.random() - 0.5) * 0.1,
+                    rotationX: 0,
+                    rotationY: 0
+                };
+                
+                this.stars.push(starInfo);
+                this.container.appendChild(star);
+            }
+            
+            startAnimation() {
+                requestAnimationFrame((timestamp) => this.animate(timestamp));
+            }
+            
+            animate(timestamp) {
+                // 控制帧率，避免过度渲染
+                if (timestamp - this.lastTime < 33) { // 约30fps
+                    requestAnimationFrame((timestamp) => this.animate(timestamp));
+                    return;
+                }
+                
+                this.lastTime = timestamp;
+                const time = timestamp * 0.001;
+                
+                // 优化：只更新可见区域的星星
+                const visibleStars = this.getVisibleStars();
+                
+                visibleStars.forEach(star => {
+                    // 3D位置更新
+                    star.x += star.vx;
+                    star.y += star.vy;
+                    star.z += star.vz;
+                    
+                    // 边界检查和重置
+                    if (star.x < -10) star.x = 110;
+                    if (star.x > 110) star.x = -10;
+                    if (star.y < -10) star.y = 110;
+                    if (star.y > 110) star.y = -10;
+                    if (star.z < -500) star.z = 500;
+                    if (star.z > 500) star.z = -500;
+                    
+                    // 3D旋转效果
+                    star.rotationX = Math.sin(time * 0.1 + star.x) * 10;
+                    star.rotationY = Math.cos(time * 0.1 + star.y) * 10;
+                    
+                    // 景深效果（基于Z轴位置）
+                    const scale = 1 + (star.z / 1000);
+                    const opacity = star.opacity * (0.5 + (star.z + 500) / 1000);
+                    
+                    // 应用变换
+                    star.element.style.transform = `translate(${star.x}%, ${star.y}%) rotateX(${star.rotationX}deg) rotateY(${star.rotationY}deg) translateZ(${star.z}px) scale(${scale})`;
+                    star.element.style.opacity = opacity;
+                });
+                
+                this.frameCount++;
+                requestAnimationFrame((timestamp) => this.animate(timestamp));
+            }
+            
+            getVisibleStars() {
+                // 简单的可见性检查，只返回可能在视口内的星星
+                return this.stars.filter(star => {
+                    return star.x > -20 && star.x < 120 && star.y > -20 && star.y < 120;
+                });
+            }
+            
+            setupEventListeners() {
+                // 窗口 resize 事件（响应式设计）
+                window.addEventListener('resize', () => {
+                    // 调整容器大小
+                    this.container.style.width = `${window.innerWidth}px`;
+                    this.container.style.height = `${window.innerHeight}px`;
+                });
+                
+                // 初始设置容器大小
+                this.container.style.width = `${window.innerWidth}px`;
+                this.container.style.height = `${window.innerHeight}px`;
+            }
+        }
+        
+        // 初始化星空背景
+        window.addEventListener('DOMContentLoaded', () => {
+            new StarryBackground();
+        });
+        
         // 课程数据
         const courseData = {
             'Monday': {

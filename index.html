@@ -46,6 +46,8 @@
             transform-style: preserve-3d;
         }
         
+
+        
         .star {
             position: absolute;
             background-color: white;
@@ -56,30 +58,49 @@
         
         /* 镜头摇晃动画 */
         @keyframes cameraShake {
-            0%, 100% {
+            0% {
                 transform: translate(0, 0) rotate(0deg);
             }
-            25% {
-                transform: translate(-1px, 1px) rotate(0.5deg);
+            10% {
+                transform: translate(-0.5px, 0.5px) rotate(0.15deg);
+            }
+            20% {
+                transform: translate(-0.25px, 0.25px) rotate(0.05deg);
+            }
+            30% {
+                transform: translate(0.5px, -0.5px) rotate(-0.15deg);
+            }
+            40% {
+                transform: translate(0.25px, -0.25px) rotate(-0.05deg);
             }
             50% {
-                transform: translate(1px, -1px) rotate(-0.5deg);
+                transform: translate(-0.5px, -0.5px) rotate(0.15deg);
             }
-            75% {
-                transform: translate(-1px, -1px) rotate(0.5deg);
+            60% {
+                transform: translate(-0.25px, -0.25px) rotate(0.05deg);
+            }
+            70% {
+                transform: translate(0.5px, 0.5px) rotate(-0.15deg);
+            }
+            80% {
+                transform: translate(0.25px, 0.25px) rotate(-0.05deg);
+            }
+            90% {
+                transform: translate(-0.25px, 0.25px) rotate(0.1deg);
+            }
+            100% {
+                transform: translate(0, 0) rotate(0deg);
             }
         }
         
         .stars-container {
-            animation: cameraShake 10s ease-in-out infinite;
+            animation: cameraShake 25s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
         }
         
         .container {
             max-width: 1000px;
             margin: 0 auto;
             padding: 24px;
-            background-color: rgba(20, 20, 20, 0.1);
-            backdrop-filter: blur(2px);
             animation: containerFadeIn 0.8s ease-out;
         }
         
@@ -105,12 +126,11 @@
             }
             
             .date-nav .button-container {
-                display: flex;
-                gap: 20px;
-                width: 100%;
-                justify-content: center;
-                margin-top: 10px;
-            }
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 10px;
+        }
             
             /* 星期和课程整合 */
             .weekday {
@@ -138,21 +158,13 @@
         
         .date-nav {
             display: flex;
-            justify-content: space-around;
+            flex-direction: column;
             align-items: center;
             margin-bottom: 24px;
             padding: 20px;
-            background-color: rgba(30, 30, 30, 0.1);
-            backdrop-filter: blur(2px);
             border-radius: 10px;
             min-height: 130px;
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        
-        .date-nav:hover {
-            box-shadow: 0 4px 20px rgba(52, 152, 219, 0.15);
-            transform: translateY(-2px);
         }
         
         .date-nav button {
@@ -167,104 +179,49 @@
             justify-content: center;
             min-width: 100px;
             min-height: 50px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.15s ease;
             font-weight: 500;
             font-size: 14px;
             position: relative;
             overflow: hidden;
         }
         
-        .date-nav button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.6s ease;
-        }
-        
-        .date-nav button:hover::before {
-            left: 100%;
-        }
-        
-        .date-nav button:hover {
-            background-color: #2980b9;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4);
-        }
-        
         .date-nav .date-info {
             text-align: center;
-            flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            background-color: rgba(30, 30, 30, 0.1);
-            backdrop-filter: blur(2px);
             padding: 10px;
             border-radius: 8px;
+        }
+        
+        .date-nav .button-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 10px;
         }
         
         .date-nav .current-time {
             font-size: 20px;
             font-weight: 600;
             color: #ffffff;
-            transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
             display: inline-block;
             margin: 0 auto;
-        }
-        
-        .date-nav .current-time::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background-color: #3498db;
-            transition: width 0.3s ease;
-        }
-        
-        .date-nav .current-time:hover {
-            color: #3498db;
-        }
-        
-        .date-nav .current-time:hover::after {
-            width: 100%;
+            transition: transform 0.15s ease;
         }
         
         .date-nav .current-date-week {
             font-size: 15px;
             color: #b0b0b0;
             margin-top: 8px;
-            transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
             display: inline-block;
             margin: 8px auto 0;
-        }
-        
-        .date-nav .current-date-week::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background-color: #3498db;
-            transition: width 0.3s ease;
-        }
-        
-        .date-nav .current-date-week:hover {
-            color: #3498db;
-        }
-        
-        .date-nav .current-date-week:hover::after {
-            width: 100%;
+            transition: transform 0.15s ease;
         }
         
         .weekday {
@@ -274,18 +231,12 @@
             margin-bottom: 24px;
             cursor: pointer;
             color: #ffffff;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             padding: 12px;
             border-radius: 8px;
             background-color: rgba(30, 30, 30, 0.1);
             backdrop-filter: blur(2px);
-        }
-        
-        .weekday:hover {
-            color: #3498db;
-            transform: scale(1.03);
-            background-color: rgba(52, 152, 219, 0.1);
+            transition: transform 0.15s ease;
         }
         
         .course-list {
@@ -300,7 +251,6 @@
             background-color: rgba(30, 30, 30, 0.1);
             backdrop-filter: blur(2px);
             min-height: 130px;
-            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
             animation: courseItemFadeIn 0.4s ease-out forwards;
@@ -315,7 +265,6 @@
             height: 100%;
             background: linear-gradient(to bottom, #3498db, #2980b9);
             opacity: 0;
-            transition: opacity 0.3s ease;
         }
         
         .course-item.active::before {
@@ -397,11 +346,6 @@
             flex-direction: column;
             justify-content: center;
             color: #ffffff;
-            transition: all 0.3s ease;
-        }
-        
-        .course-item:hover .course-time {
-            background-color: rgba(52, 152, 219, 0.1);
         }
         
         .course-info {
@@ -411,7 +355,6 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            transition: all 0.3s ease;
         }
         
         .course-name {
@@ -419,11 +362,6 @@
             font-weight: 600;
             margin-bottom: 6px;
             color: #ffffff;
-            transition: all 0.3s ease;
-        }
-        
-        .course-item:hover .course-name {
-            color: #3498db;
         }
         
         .course-detail {
@@ -431,7 +369,6 @@
             color: #b0b0b0;
             line-height: 1.4;
             margin-top: 0;
-            transition: all 0.3s ease;
         }
         
         .course-detail br {
@@ -448,13 +385,6 @@
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 10px;
             animation: fadeIn 0.6s ease-out;
-            transition: all 0.3s ease;
-        }
-        
-        .no-course:hover {
-            background-color: rgba(52, 152, 219, 0.05);
-            color: #3498db;
-            transform: scale(1.02);
         }
         
         @keyframes fadeIn {
@@ -718,33 +648,12 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.15s ease;
             position: relative;
             overflow: hidden;
             min-height: 44px;
             min-width: 80px;
             font-size: 14px;
-        }
-        
-        #cancelDate::before, #cancelWeek::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.6s ease;
-        }
-        
-        #cancelDate:hover::before, #cancelWeek:hover::before {
-            left: 100%;
-        }
-        
-        #cancelDate:hover, #cancelWeek:hover {
-            background-color: #c0392b;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 16px rgba(231, 76, 60, 0.4);
         }
         
         #confirmDate, #confirmWeek {
@@ -754,33 +663,12 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.15s ease;
             position: relative;
             overflow: hidden;
             min-height: 44px;
             min-width: 80px;
             font-size: 14px;
-        }
-        
-        #confirmDate::before, #confirmWeek::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.6s ease;
-        }
-        
-        #confirmDate:hover::before, #confirmWeek:hover::before {
-            left: 100%;
-        }
-        
-        #confirmDate:hover, #confirmWeek:hover {
-            background-color: #229954;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 16px rgba(39, 174, 96, 0.4);
         }
     </style>
 </head>
@@ -827,16 +715,42 @@
     </div>
     
     <script>
-        // 3D粒子星星背景实现
+        // 3D粒子星星背景实现 - 基于2D技术模拟3D景深效果
         class StarryBackground {
             constructor() {
                 this.container = document.getElementById('starsContainer');
                 this.stars = [];
-                this.starCount = 150;
+                this.starCount = 150; // 创建150个星星粒子
+                this.specialStarCount = 13; // 13个特殊亮星
                 this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
                 this.lastTime = 0;
                 this.frameCount = 0;
                 this.optimized = false;
+                // 特殊亮星的锚定位置（模拟红点位置）
+                this.specialStarPositions = [
+                    {x: 15, y: 10}, {x: 25, y: 20}, {x: 30, y: 15}, 
+                    {x: 70, y: 10}, {x: 75, y: 20}, {x: 65, y: 25}, 
+                    {x: 20, y: 80}, {x: 30, y: 75}, {x: 25, y: 85}, 
+                    {x: 70, y: 80}, {x: 80, y: 75}, {x: 75, y: 85}, 
+                    {x: 50, y: 50}
+                ];
+                this.specialStarIndex = 0;
+                // 摄像头旋转参数
+                this.cameraRotationX = 0;
+                this.cameraRotationY = 0;
+                this.cameraRotationSpeedX = 0.000;
+                this.cameraRotationSpeedY = 0.002;
+                // 后续旋转状态
+                this.followUpRotation = false; // 是否开始后续旋转
+                this.targetRotation = 0; // 目标旋转角度
+                this.baseRotation = 0; // 基准旋转角度（360度旋转结束后的位置）
+                this.startRotation = 0; // 每次旋转的起始角度
+                this.rotationDirection = 1; // 旋转方向：1为正方向，-1为负方向
+                this.rotationDuration = 20000; // 旋转持续时间（毫秒）
+                this.rotationStartTime = 0; // 旋转开始时间
+                this.minRotationSpeed = 0.002; // 最小旋转速度（弧度/帧）
+                this.lastRotationTime = null; // 上一次旋转时间
+                this.currentRotationSpeed = 0; // 当前旋转速度
                 
                 // 性能检测
                 this.detectPerformance();
@@ -844,10 +758,9 @@
             }
             
             detectPerformance() {
-                // 检测设备性能，根据性能调整星星数量
+                // 检测设备性能，但保持星星数量一致
                 const isLowEndDevice = this.isMobile || navigator.userAgent.includes('Windows NT 6.1');
                 if (isLowEndDevice) {
-                    this.starCount = 80; // 低配置设备减少星星数量
                     this.optimized = true;
                 }
             }
@@ -856,12 +769,156 @@
                 this.createStars();
                 this.startAnimation();
                 this.setupEventListeners();
+                this.initCameraRotation();
+            }
+            
+            initCameraRotation() {
+                // 初始化摄像头旋转动画，1.5秒内旋转360度，带缓动效果
+                const duration = 1500; // 1.5秒
+                const startTime = performance.now();
+                const targetRotation = Math.PI * 2; // 360度
+                const minSpeed = 0.002; // 最小速度，不低于正常Y轴旋转速度
+                
+                // 计算最大速度，确保在指定时间内完成旋转
+                const maxSpeed = (targetRotation / duration) * 16.67 * 2; // 假设60fps
+                
+                // 自定义缓动函数，确保速度不低于最小值，使用更明显的减速效果
+                const customEase = (t) => {
+                    // 先加速到最大速度，然后使用指数减速
+                    if (t < 0.2) {
+                        // 加速阶段（更短）
+                        return (maxSpeed - minSpeed) * (t / 0.2) + minSpeed;
+                    } else {
+                        // 减速阶段（更长）- 使用指数减速
+                        const normalizedT = (t - 0.2) / 0.8;
+                        // 指数减速，后期减速更明显
+                        const easedT = 1 - Math.pow(2, -10 * normalizedT);
+                        return (maxSpeed - minSpeed) * (1 - easedT) + minSpeed;
+                    }
+                };
+                
+                let accumulatedRotation = 0;
+                let lastTime = startTime;
+                
+                const animate = (currentTime) => {
+                    const elapsed = currentTime - startTime;
+                    const deltaTime = currentTime - lastTime;
+                    const linearProgress = Math.min(elapsed / duration, 1);
+                    
+                    // 计算当前速度
+                    const currentSpeed = customEase(linearProgress);
+                    // 计算本次帧的旋转量
+                    const rotationDelta = currentSpeed * (deltaTime / 16.67); // 假设60fps为基准
+                    
+                    // 应用旋转
+                    accumulatedRotation += rotationDelta;
+                    this.cameraRotationY = accumulatedRotation;
+                    
+                    // 记录当前旋转速度
+                    this.currentRotationSpeed = currentSpeed;
+                    
+                    lastTime = currentTime;
+                    
+                    if (linearProgress < 1) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        // 360度旋转结束，开始后续旋转
+                        this.startFollowUpRotation();
+                    }
+                };
+                
+                requestAnimationFrame(animate);
+            }
+            
+            startFollowUpRotation() {
+                // 开始后续旋转：30° → -30° → 30° 循环
+                this.followUpRotation = true;
+                // 记录360度旋转结束后的基准角度
+                this.baseRotation = this.cameraRotationY;
+                this.rotationDirection = 1;
+                this.setNextTargetRotation();
+            }
+            
+            setNextTargetRotation() {
+                // 设置下一个目标旋转角度（绝对角度）
+                if (this.rotationDirection === 1) {
+                    this.targetRotation = this.baseRotation + 30 * Math.PI / 180; // 旋转到30度（弧度）
+                } else {
+                    this.targetRotation = this.baseRotation - 30 * Math.PI / 180; // 旋转到-30度（弧度）
+                }
+                this.rotationStartTime = performance.now();
+                this.startRotation = this.cameraRotationY;
+            }
+            
+            updateFollowUpRotation(currentTime) {
+                // 更新后续旋转
+                if (!this.followUpRotation) return;
+                
+                const elapsed = currentTime - this.rotationStartTime;
+                const linearProgress = Math.min(elapsed / this.rotationDuration, 1);
+                
+                // 计算总旋转角度
+                const totalRotation = this.targetRotation - this.startRotation;
+                const rotationDirection = Math.sign(totalRotation);
+                
+                // 计算目标速度（基于总旋转角度和持续时间）
+                const targetSpeed = Math.abs(totalRotation) / (this.rotationDuration / 16.67);
+                
+                // 使用更平滑的曲线速度过渡
+                const speedProgress = this.easeInOutCubic(linearProgress);
+                
+                // 计算目标速度（带方向）
+                const targetSpeedWithDirection = rotationDirection * targetSpeed;
+                // 计算当前速度（带方向）
+                const currentSpeedWithDirection = Math.sign(this.currentRotationSpeed) * this.currentRotationSpeed;
+                
+                // 平滑过渡速度（包括方向变化）
+                const newSpeedWithDirection = currentSpeedWithDirection + (targetSpeedWithDirection - currentSpeedWithDirection) * speedProgress;
+                const currentSpeed = Math.max(this.minRotationSpeed, Math.abs(newSpeedWithDirection));
+                const currentDirection = Math.sign(newSpeedWithDirection);
+                
+                // 计算当前帧应该旋转的角度
+                const deltaTime = currentTime - (this.lastRotationTime || this.rotationStartTime);
+                const rotationDelta = currentDirection * currentSpeed * (deltaTime / 16.67);
+                
+                // 计算当前旋转角度
+                let currentRotation = this.cameraRotationY + rotationDelta;
+                
+                // 检查是否到达目标角度
+                if (rotationDirection > 0 && currentRotation >= this.targetRotation) {
+                    currentRotation = this.targetRotation;
+                } else if (rotationDirection < 0 && currentRotation <= this.targetRotation) {
+                    currentRotation = this.targetRotation;
+                }
+                
+                // 应用旋转
+                this.cameraRotationY = currentRotation;
+                this.lastRotationTime = currentTime;
+                this.currentRotationSpeed = currentDirection * currentSpeed;
+                
+                if (Math.abs(this.cameraRotationY - this.targetRotation) < 0.01) {
+                    // 旋转完成，切换方向
+                    this.rotationDirection *= -1;
+                    // 确保下一次旋转的目标是基于基准角度的绝对位置
+                    this.setNextTargetRotation();
+                    this.lastRotationTime = null;
+                }
+            }
+            
+            easeInOutSine(t) {
+                // 正弦缓动函数，更加平滑的过渡
+                return -(Math.cos(Math.PI * t) - 1) / 2;
+            }
+            
+            easeInOutCubic(t) {
+                // 三次方缓动函数，提供更平滑的曲线速度过渡
+                return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
             }
             
             createStars() {
                 // 分批次创建星星，避免一次性创建过多DOM节点
                 let created = 0;
-                const batchSize = 20;
+                const batchSize = 10;
                 
                 const createBatch = () => {
                     const end = Math.min(created + batchSize, this.starCount);
@@ -882,24 +939,41 @@
                 const star = document.createElement('div');
                 
                 // 随机大小
-                const size = Math.random() * (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--star-max-size')) - parseInt(getComputedStyle(document.documentElement).getPropertyValue('--star-min-size'))) + parseInt(getComputedStyle(document.documentElement).getPropertyValue('--star-min-size'));
+                let size = Math.random() * (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--star-max-size')) - parseInt(getComputedStyle(document.documentElement).getPropertyValue('--star-min-size'))) + parseInt(getComputedStyle(document.documentElement).getPropertyValue('--star-min-size'));
                 
-                // 随机位置（考虑视口大小）
-                const x = Math.random() * 100;
-                const y = Math.random() * 100;
+                // 随机位置（确保在屏幕可视区域内）
+                let x = Math.random() * 100;
+                let y = Math.random() * 100;
                 
                 // 随机透明度
-                const opacity = Math.random() * (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--star-max-opacity')) - parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--star-min-opacity'))) + parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--star-min-opacity'));
-                
-                // 随机速度
-                const duration = Math.random() * (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--star-max-duration')) - parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--star-min-duration'))) + parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--star-min-duration'));
+                let opacity = Math.random() * (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--star-max-opacity')) - parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--star-min-opacity'))) + parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--star-min-opacity'));
                 
                 // 3D深度（Z轴位置）
-                const z = Math.random() * 1000 - 500; // -500 到 500 的范围
+                const z = Math.random() * 700 - 500; // -500 到 200 的范围
                 
                 // 随机颜色（增加星空层次感）
-                const colors = ['#ffffff', '#f0f0f0', '#e0e0e0', '#d0d0d0'];
-                const color = colors[Math.floor(Math.random() * colors.length)];
+                const colors = ['#ffffff', '#f0f0f0', '#e0e0e0', '#d0d0d0', '#add8e6', '#b0e0e6', '#e0ffff'];
+                let color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // 检查是否为特殊亮星（靠近z轴500的星星）
+                let isSpecialStar = false;
+                let anchorX = x;
+                let anchorY = y;
+                if (z > 400 && this.stars.filter(s => s.isSpecial).length < this.specialStarCount) {
+                    isSpecialStar = true;
+                    // 锚定在红点位置
+                    if (this.specialStarIndex < this.specialStarPositions.length) {
+                        const pos = this.specialStarPositions[this.specialStarIndex];
+                        anchorX = pos.x;
+                        anchorY = pos.y;
+                        x = anchorX;
+                        y = anchorY;
+                        this.specialStarIndex++;
+                    }
+                    size *= 2; // 更大
+                    opacity = 1; // 更亮
+                    color = '#ffffff'; // 白色
+                }
                 
                 // 设置样式
                 star.className = 'star';
@@ -910,18 +984,35 @@
                 star.style.opacity = opacity;
                 star.style.backgroundColor = color;
                 
+                // 添加泛光效果
+                star.style.boxShadow = `0 0 ${size * 2}px ${size * 0.5}px ${color}`;
+                
                 // 存储星星信息
                 const starInfo = {
                     element: star,
                     size,
                     x,
                     y,
+                    anchorX: anchorX,
+                    anchorY: anchorY,
                     opacity,
-                    duration,
                     z,
-                    vx: (Math.random() - 0.5) * 0.1,
-                    vy: (Math.random() - 0.5) * 0.1,
-                    vz: (Math.random() - 0.5) * 0.1,
+                    color,
+                    isSpecial: isSpecialStar,
+                    // 闪烁效果相关
+                    baseOpacity: opacity,
+                    flickerSpeed: Math.random() * 0.02 + 0.01,
+                    flickerPhase: Math.random() * Math.PI * 2,
+                    // 特殊亮星的小幅度随机位移
+                    offsetX: (Math.random() - 0.5) * 0.5,
+                    offsetY: (Math.random() - 0.5) * 0.5,
+                    offsetSpeed: Math.random() * 0.01 + 0.005,
+                    offsetPhaseX: Math.random() * Math.PI * 2,
+                    offsetPhaseY: Math.random() * Math.PI * 2,
+                    // 取消星星飘荡，只保留Z轴移动
+                    vx: 0,
+                    vy: 0,
+                    vz: (Math.random() - 0.5) * 0.01,
                     rotationX: 0,
                     rotationY: 0
                 };
@@ -944,34 +1035,61 @@
                 this.lastTime = timestamp;
                 const time = timestamp * 0.001;
                 
+                // 更新摄像头旋转
+                this.cameraRotationX += this.cameraRotationSpeedX;
+                
+                // 更新后续旋转
+                this.updateFollowUpRotation(timestamp);
+                
                 // 优化：只更新可见区域的星星
                 const visibleStars = this.getVisibleStars();
                 
                 visibleStars.forEach(star => {
                     // 3D位置更新
-                    star.x += star.vx;
-                    star.y += star.vy;
                     star.z += star.vz;
                     
-                    // 边界检查和重置
-                    if (star.x < -10) star.x = 110;
-                    if (star.x > 110) star.x = -10;
-                    if (star.y < -10) star.y = 110;
-                    if (star.y > 110) star.y = -10;
-                    if (star.z < -500) star.z = 500;
-                    if (star.z > 500) star.z = -500;
+                    // 边界检查和重置，确保所有星星在动画过程中不会超出屏幕可视区域
+                    if (star.z < -500) star.z = 200;
+                    if (star.z > 200) star.z = -500;
                     
-                    // 3D旋转效果
-                    star.rotationX = Math.sin(time * 0.1 + star.x) * 10;
-                    star.rotationY = Math.cos(time * 0.1 + star.y) * 10;
+                    // 特殊亮星的小幅度随机位移
+                    if (star.isSpecial) {
+                        // 更新位移相位
+                        star.offsetPhaseX += star.offsetSpeed;
+                        star.offsetPhaseY += star.offsetSpeed;
+                        // 计算小幅度位移
+                        const offsetX = Math.sin(star.offsetPhaseX) * 0.5;
+                        const offsetY = Math.sin(star.offsetPhaseY) * 0.5;
+                        // 保持在锚定位置附近
+                        star.x = star.anchorX + offsetX;
+                        star.y = star.anchorY + offsetY;
+                    }
                     
-                    // 景深效果（基于Z轴位置）
+                    // 星星闪烁效果
+                    // z轴往后的星星闪烁更明显
+                    const flickerIntensity = star.z < 0 ? Math.abs(star.z) / 500 : 0.1;
+                    star.flickerPhase += star.flickerSpeed;
+                    const flicker = Math.sin(star.flickerPhase) * 0.1 * flickerIntensity + 1;
+                    
+                    // 景深效果（基于Z轴位置），使星星呈现远近层次感
                     const scale = 1 + (star.z / 1000);
-                    const opacity = star.opacity * (0.5 + (star.z + 500) / 1000);
+                    let opacity = star.baseOpacity;
+                    // 特殊亮星始终保持高亮度
+                    if (star.isSpecial) {
+                        opacity = 1 * flicker;
+                    } else {
+                        opacity = star.baseOpacity * (0.3 + (star.z + 500) / 700) * flicker;
+                    }
                     
-                    // 应用变换
-                    star.element.style.transform = `translate(${star.x}%, ${star.y}%) rotateX(${star.rotationX}deg) rotateY(${star.rotationY}deg) translateZ(${star.z}px) scale(${scale})`;
+                    // 根据z轴位置计算旋转系数，z轴越小（越远）旋转越小，最小为0.01
+                    const rotationFactor = Math.max(0.01, (star.z + 500) / 700);
+                    // 应用变换 - 包含摄像头旋转，并确保星星始终面向屏幕
+                    star.element.style.transform = `translate(${star.x}%, ${star.y}%) rotateX(${this.cameraRotationX * rotationFactor * 180 / Math.PI}deg) rotateY(${this.cameraRotationY * rotationFactor * 180 / Math.PI}deg) translateZ(${star.z}px) rotateY(${-this.cameraRotationY * rotationFactor * 180 / Math.PI}deg) rotateX(${-this.cameraRotationX * rotationFactor * 180 / Math.PI}deg) scale(${scale})`;
                     star.element.style.opacity = opacity;
+                    
+                    // 根据深度调整泛光效果
+                    const glowSize = star.size * 2 * scale;
+                    star.element.style.boxShadow = `0 0 ${glowSize}px ${glowSize * 0.5}px ${star.color}`;
                 });
                 
                 this.frameCount++;
@@ -981,7 +1099,7 @@
             getVisibleStars() {
                 // 简单的可见性检查，只返回可能在视口内的星星
                 return this.stars.filter(star => {
-                    return star.x > -20 && star.x < 120 && star.y > -20 && star.y < 120;
+                    return star.x > -10 && star.x < 110 && star.y > -10 && star.y < 110;
                 });
             }
             
@@ -1257,6 +1375,22 @@
         // 检查当前时间是否与课程时间段重叠
         function isCurrentTimeInCourse(timeSlot) {
             const now = new Date();
+            
+            // 检查日期是否匹配
+            const nowYear = now.getFullYear();
+            const nowMonth = now.getMonth();
+            const nowDay = now.getDate();
+            
+            const currentYear = currentDate.getFullYear();
+            const currentMonth = currentDate.getMonth();
+            const currentDay = currentDate.getDate();
+            
+            // 如果日期不匹配，直接返回false
+            if (nowYear !== currentYear || nowMonth !== currentMonth || nowDay !== currentDay) {
+                return false;
+            }
+            
+            // 检查时间是否重叠
             const currentHour = now.getHours();
             const currentMinute = now.getMinutes();
             const currentTime = currentHour * 60 + currentMinute;
@@ -1352,13 +1486,25 @@
             updateDateDisplay();
         }, 60000);
         
-        // 事件监听
+        // 事件监听 - 修复移动端点击可能触发两次点击事件的BUG
         function addTouchEvent(element, callback) {
-            element.addEventListener('click', callback);
-            element.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                callback(e);
-            });
+            // 检测是否为触摸设备
+            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            
+            if (isTouchDevice) {
+                // 触摸设备只添加touchstart事件
+                element.addEventListener('touchstart', function(e) {
+                    // 添加触摸反馈动画
+                    element.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        element.style.transform = 'scale(1)';
+                    }, 150);
+                    callback(e);
+                });
+            } else {
+                // 非触摸设备添加click事件
+                element.addEventListener('click', callback);
+            }
         }
         
         addTouchEvent(document.getElementById('prevDay'), function() {
@@ -1371,9 +1517,19 @@
             updateDateDisplay();
         });
         
-        // 点击实时时间刷新网站
+        // 点击实时时间滚动到日期位置
         addTouchEvent(document.getElementById('currentTime'), function() {
-            location.reload();
+            // 添加触摸反馈动画
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+            
+            // 滚动到日期位置
+            const dateElement = document.getElementById('currentDateWeek');
+            if (dateElement) {
+                dateElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
         });
         
         // 日历相关变量

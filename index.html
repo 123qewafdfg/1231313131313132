@@ -781,10 +781,10 @@
                 this.container = document.getElementById('starsContainer');
                 this.stars = [];
                 this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                // 手机端 100 个星星，桌面端 150 个星星
-                this.starCount = this.isMobile ? 100 : 150;
+                // 手机端 60 个星星，桌面端 150 个星星
+                this.starCount = this.isMobile ? 60 : 150;
                 // 特殊亮星数量根据总星星数按比例调整
-                this.specialStarCount = this.isMobile ? 10 : 13;
+                this.specialStarCount = this.isMobile ? 6 : 13;
                 this.lastTime = 0;
                 this.frameCount = 0;
                 this.optimized = false;
@@ -1066,8 +1066,8 @@
             
             animate(timestamp) {
                 // 控制帧率，避免过度渲染
-                // 手机端 120fps，桌面端 60fps
-                const frameInterval = this.isMobile ? 8 : 16;
+                // 手机端 60fps，桌面端 60fps
+                const frameInterval = this.isMobile ? 16 : 16;
                 if (timestamp - this.lastTime < frameInterval) {
                     requestAnimationFrame((timestamp) => this.animate(timestamp));
                     return;

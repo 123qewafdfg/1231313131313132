@@ -10,6 +10,11 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        *:focus {
+            outline: none;
         }
         
         body {
@@ -18,8 +23,9 @@
             background-color: #0a0a0a;
             padding: 20px;
             color: #e0e0e0;
-            overflow-x: hidden;
+            overflow: hidden;
             position: relative;
+            height: 100vh;
         }
         
         /* 3D粒子星星背景样式 */
@@ -53,7 +59,7 @@
             background-color: white;
             border-radius: 50%;
             transform-style: preserve-3d;
-            transition: transform 0.05s ease-out;
+            will-change: transform, opacity;
         }
         
         /* 镜头摇晃动画 */
@@ -94,7 +100,13 @@
         }
         
         .stars-container {
-            animation: cameraShake 25s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+            will-change: transform;
+        }
+        
+        @media (min-width: 769px) {
+            .stars-container {
+                animation: cameraShake 25s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+            }
         }
         
         .container {
@@ -102,12 +114,16 @@
             margin: 0 auto;
             padding: 24px;
             animation: containerFadeIn 0.8s ease-out;
+            height: 100%;
+            overflow: hidden;
         }
         
         /* 移动端整合布局 */
         @media screen and (max-width: 768px) {
             .container {
-                padding: 16px;
+                padding: 12px;
+                height: 100%;
+                overflow-y: auto;
             }
             
             /* 日期导航布局 */
@@ -115,33 +131,55 @@
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                padding: 16px;
-                margin-bottom: 16px;
-                gap: 10px;
+                padding: 12px;
+                margin-bottom: 12px;
+                gap: 8px;
             }
             
             .date-nav .date-info {
                 text-align: center;
-                margin: 8px 0;
+                margin: 4px 0;
             }
             
             .date-nav .button-container {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-            margin-top: 10px;
-        }
+                display: flex;
+                gap: 16px;
+                justify-content: center;
+                margin-top: 8px;
+            }
             
             /* 星期和课程整合 */
             .weekday {
-                margin-bottom: 16px;
+                margin-bottom: 12px;
                 text-align: center;
+                padding: 8px;
+                font-size: 16px;
             }
             
             .course-item {
-                margin-bottom: 16px;
+                margin-bottom: 12px;
                 border-radius: 8px;
                 overflow: hidden;
+                min-height: auto;
+            }
+            
+            .course-time {
+                width: 90px;
+                padding: 10px;
+                font-size: 11px;
+            }
+            
+            .course-info {
+                padding: 10px;
+            }
+            
+            .course-name {
+                font-size: 14px;
+                margin-bottom: 4px;
+            }
+            
+            .course-detail {
+                font-size: 12px;
             }
         }
         
@@ -234,9 +272,14 @@
             position: relative;
             padding: 12px;
             border-radius: 8px;
-            background-color: rgba(30, 30, 30, 0.1);
-            backdrop-filter: blur(2px);
+            background-color: rgba(30, 30, 30, 0.5);
             transition: transform 0.15s ease;
+        }
+        
+        @media (min-width: 769px) {
+            .weekday {
+                backdrop-filter: blur(2px);
+            }
         }
         
         .course-list {
@@ -248,47 +291,54 @@
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 10px;
             margin-bottom: 18px;
-            background-color: rgba(30, 30, 30, 0.1);
-            backdrop-filter: blur(2px);
+            background-color: rgba(30, 30, 30, 0.5);
             min-height: 130px;
             position: relative;
             overflow: hidden;
             animation: courseItemFadeIn 0.4s ease-out forwards;
         }
         
-        .course-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(to bottom, #3498db, #2980b9);
-            opacity: 0;
+        @media (min-width: 769px) {
+            .course-item {
+                backdrop-filter: blur(2px);
+            }
         }
         
-        .course-item.active::before {
-            opacity: 1;
-            background: linear-gradient(to bottom, #3498db, #9b59b6, #e74c3c, #f39c12);
-            animation: borderGradient 2s ease-in-out infinite;
-        }
-        
-        .course-item.active::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(52, 152, 219, 0.1), transparent);
-            transform: rotate(45deg);
-            animation: shimmer 2s ease-in-out infinite;
+        @media (min-width: 769px) {
+            .course-item::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 4px;
+                height: 100%;
+                background: linear-gradient(to bottom, #3498db, #2980b9);
+                opacity: 0;
+            }
+            
+            .course-item.active::before {
+                opacity: 1;
+                background: linear-gradient(to bottom, #3498db, #9b59b6, #e74c3c, #f39c12);
+                animation: borderGradient 2s ease-in-out infinite;
+            }
+            
+            .course-item.active::after {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: linear-gradient(45deg, transparent, rgba(52, 152, 219, 0.1), transparent);
+                transform: rotate(45deg);
+                animation: shimmer 2s ease-in-out infinite;
+            }
         }
         
         .course-item.active {
             border-color: #3498db;
-            box-shadow: 0 8px 24px rgba(52, 152, 219, 0.35), 0 0 30px rgba(155, 89, 182, 0.2);
-            transform: translateY(-3px) scale(1.01);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.35);
+            transform: translateY(-2px);
         }
         
         @keyframes courseItemFadeIn {
@@ -339,13 +389,18 @@
             padding: 20px;
             border-right: 1px solid rgba(255,255,255,0.1);
             font-weight: 600;
-            background-color: rgba(35, 35, 35, 0.1);
-            backdrop-filter: blur(2px);
+            background-color: rgba(35, 35, 35, 0.5);
             text-align: center;
             display: flex;
             flex-direction: column;
             justify-content: center;
             color: #ffffff;
+        }
+        
+        @media (min-width: 769px) {
+            .course-time {
+                backdrop-filter: blur(2px);
+            }
         }
         
         .course-info {
@@ -380,11 +435,16 @@
             font-size: 22px;
             color: #999;
             padding: 80px 20px;
-            background-color: rgba(30, 30, 30, 0.1);
-            backdrop-filter: blur(2px);
+            background-color: rgba(30, 30, 30, 0.5);
             border: 1px solid rgba(255,255,255,0.1);
             border-radius: 10px;
             animation: fadeIn 0.6s ease-out;
+        }
+        
+        @media (min-width: 769px) {
+            .no-course {
+                backdrop-filter: blur(2px);
+            }
         }
         
         @keyframes fadeIn {
@@ -692,10 +752,10 @@
     
     <!-- 日期选择器模态框 -->
     <div id="dateModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index: 1000; backdrop-filter: blur(8px); transition: all 0.3s ease;">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #1e1e1e; padding: 25px; border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); min-width: 320px; animation: modalFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.1);">
-            <h3 style="margin-bottom: 20px; text-align: center; color: #ffffff; font-weight: 600;">选择日期</h3>
-            <div id="calendar" style="margin-bottom: 20px;"></div>
-            <div style="display: flex; justify-content: space-between;">
+        <div class="modal-content" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #1e1e1e; padding: 16px; border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); width: 95%; max-width: 320px; max-height: 90vh; overflow: hidden; animation: modalFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.1);">
+            <h3 style="margin-bottom: 12px; text-align: center; color: #ffffff; font-weight: 600; font-size: 16px;">选择日期</h3>
+            <div id="calendar" style="margin-bottom: 12px;"></div>
+            <div style="display: flex; justify-content: space-between; gap: 10px;">
                 <button id="cancelDate">取消</button>
                 <button id="confirmDate">确认</button>
             </div>
@@ -704,10 +764,10 @@
     
     <!-- 周数选择器模态框 -->
     <div id="weekModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.8); z-index: 1000; backdrop-filter: blur(8px); transition: all 0.3s ease;">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #1e1e1e; padding: 25px; border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); min-width: 320px; animation: modalFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.1);">
-            <h3 style="margin-bottom: 20px; text-align: center; color: #ffffff; font-weight: 600;">选择周数</h3>
-            <div id="weekSelector" style="margin-bottom: 20px;"></div>
-            <div style="display: flex; justify-content: space-between;">
+        <div class="modal-content" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: #1e1e1e; padding: 16px; border-radius: 12px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); width: 95%; max-width: 320px; max-height: 90vh; overflow: hidden; animation: modalFadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.1);">
+            <h3 style="margin-bottom: 12px; text-align: center; color: #ffffff; font-weight: 600; font-size: 16px;">选择周数</h3>
+            <div id="weekSelector" style="margin-bottom: 12px;"></div>
+            <div style="display: flex; justify-content: space-between; gap: 10px;">
                 <button id="cancelWeek">取消</button>
                 <button id="confirmWeek">确认</button>
             </div>
@@ -721,10 +781,10 @@
                 this.container = document.getElementById('starsContainer');
                 this.stars = [];
                 this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                // 手机端50个星星，桌面端150个星星
-                this.starCount = this.isMobile ? 50 : 150;
+                // 手机端 100 个星星，桌面端 150 个星星
+                this.starCount = this.isMobile ? 100 : 150;
                 // 特殊亮星数量根据总星星数按比例调整
-                this.specialStarCount = this.isMobile ? 5 : 13;
+                this.specialStarCount = this.isMobile ? 10 : 13;
                 this.lastTime = 0;
                 this.frameCount = 0;
                 this.optimized = false;
@@ -918,52 +978,34 @@
             }
             
             createStars() {
-                // 分批次创建星星，避免一次性创建过多DOM节点
-                let created = 0;
-                const batchSize = 10;
-                
-                const createBatch = () => {
-                    const end = Math.min(created + batchSize, this.starCount);
-                    for (let i = created; i < end; i++) {
-                        this.createStar();
-                    }
-                    created = end;
-                    
-                    if (created < this.starCount) {
-                        requestAnimationFrame(createBatch);
-                    }
-                };
-                
-                createBatch();
+                const fragment = document.createDocumentFragment();
+                for (let i = 0; i < this.starCount; i++) {
+                    const star = this.createStarElement();
+                    fragment.appendChild(star);
+                }
+                this.container.appendChild(fragment);
             }
             
-            createStar() {
+            createStarElement() {
                 const star = document.createElement('div');
                 
-                // 随机大小
                 let size = Math.random() * (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--star-max-size')) - parseInt(getComputedStyle(document.documentElement).getPropertyValue('--star-min-size'))) + parseInt(getComputedStyle(document.documentElement).getPropertyValue('--star-min-size'));
                 
-                // 随机位置（确保在屏幕可视区域内）
                 let x = Math.random() * 100;
                 let y = Math.random() * 100;
                 
-                // 随机透明度
                 let opacity = Math.random() * (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--star-max-opacity')) - parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--star-min-opacity'))) + parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--star-min-opacity'));
                 
-                // 3D深度（Z轴位置）
-                const z = Math.random() * 700 - 500; // -500 到 200 的范围
+                const z = Math.random() * 700 - 500;
                 
-                // 随机颜色（增加星空层次感）
                 const colors = ['#ffffff', '#f0f0f0', '#e0e0e0', '#d0d0d0', '#add8e6', '#b0e0e6', '#e0ffff'];
                 let color = colors[Math.floor(Math.random() * colors.length)];
                 
-                // 检查是否为特殊亮星（靠近z轴500的星星）
                 let isSpecialStar = false;
                 let anchorX = x;
                 let anchorY = y;
                 if (z > 400 && this.stars.filter(s => s.isSpecial).length < this.specialStarCount) {
                     isSpecialStar = true;
-                    // 锚定在红点位置
                     if (this.specialStarIndex < this.specialStarPositions.length) {
                         const pos = this.specialStarPositions[this.specialStarIndex];
                         anchorX = pos.x;
@@ -972,12 +1014,11 @@
                         y = anchorY;
                         this.specialStarIndex++;
                     }
-                    size *= 2; // 更大
-                    opacity = 1; // 更亮
-                    color = '#ffffff'; // 白色
+                    size *= 2;
+                    opacity = 1;
+                    color = '#ffffff';
                 }
                 
-                // 设置样式
                 star.className = 'star';
                 star.style.width = `${size}px`;
                 star.style.height = `${size}px`;
@@ -985,11 +1026,8 @@
                 star.style.top = `${y}%`;
                 star.style.opacity = opacity;
                 star.style.backgroundColor = color;
-                
-                // 添加泛光效果
                 star.style.boxShadow = `0 0 ${size * 2}px ${size * 0.5}px ${color}`;
                 
-                // 存储星星信息
                 const starInfo = {
                     element: star,
                     size,
@@ -1001,28 +1039,26 @@
                     z,
                     color,
                     isSpecial: isSpecialStar,
-                    // 闪烁效果相关
                     baseOpacity: opacity,
                     flickerSpeed: this.isMobile ? Math.random() * 0.01 + 0.005 : Math.random() * 0.02 + 0.01,
                     flickerPhase: Math.random() * Math.PI * 2,
-                    // 特殊亮星的小幅度随机位移
                     offsetX: (Math.random() - 0.5) * 0.5,
                     offsetY: (Math.random() - 0.5) * 0.5,
                     offsetSpeed: this.isMobile ? Math.random() * 0.005 + 0.0025 : Math.random() * 0.01 + 0.005,
                     offsetPhaseX: Math.random() * Math.PI * 2,
                     offsetPhaseY: Math.random() * Math.PI * 2,
-                    // 取消星星飘荡，只保留Z轴移动
                     vx: 0,
                     vy: 0,
-                    // 手机端降低Z轴移动速度
                     vz: (Math.random() - 0.5) * (this.isMobile ? 0.005 : 0.01),
                     rotationX: 0,
                     rotationY: 0
                 };
                 
                 this.stars.push(starInfo);
-                this.container.appendChild(star);
+                return star;
             }
+            
+
             
             startAnimation() {
                 requestAnimationFrame((timestamp) => this.animate(timestamp));
@@ -1030,15 +1066,14 @@
             
             animate(timestamp) {
                 // 控制帧率，避免过度渲染
-                // 手机端20fps，桌面端30fps
-                const frameInterval = this.isMobile ? 50 : 33;
+                // 手机端 120fps，桌面端 60fps
+                const frameInterval = this.isMobile ? 8 : 16;
                 if (timestamp - this.lastTime < frameInterval) {
                     requestAnimationFrame((timestamp) => this.animate(timestamp));
                     return;
                 }
                 
                 this.lastTime = timestamp;
-                const time = timestamp * 0.001;
                 
                 // 更新摄像头旋转
                 this.cameraRotationX += this.cameraRotationSpeedX;
@@ -1046,67 +1081,66 @@
                 // 更新后续旋转
                 this.updateFollowUpRotation(timestamp);
                 
-                // 优化：只更新可见区域的星星
-                const visibleStars = this.getVisibleStars();
+                // 批量更新星星，减少 DOM 操作
+                const updates = [];
+                const len = this.stars.length;
                 
-                visibleStars.forEach(star => {
-                    // 3D位置更新
+                for (let i = 0; i < len; i++) {
+                    const star = this.stars[i];
+                    
+                    // 3D 位置更新
                     star.z += star.vz;
                     
-                    // 边界检查和重置，确保所有星星在动画过程中不会超出屏幕可视区域
+                    // 边界检查和重置
                     if (star.z < -500) star.z = 200;
-                    if (star.z > 200) star.z = -500;
+                    else if (star.z > 200) star.z = -500;
                     
                     // 特殊亮星的小幅度随机位移
                     if (star.isSpecial) {
-                        // 更新位移相位
                         star.offsetPhaseX += star.offsetSpeed;
                         star.offsetPhaseY += star.offsetSpeed;
-                        // 计算小幅度位移
-                        const offsetX = Math.sin(star.offsetPhaseX) * 0.5;
-                        const offsetY = Math.sin(star.offsetPhaseY) * 0.5;
-                        // 保持在锚定位置附近
-                        star.x = star.anchorX + offsetX;
-                        star.y = star.anchorY + offsetY;
+                        star.x = star.anchorX + Math.sin(star.offsetPhaseX) * 0.5;
+                        star.y = star.anchorY + Math.sin(star.offsetPhaseY) * 0.5;
                     }
                     
                     // 星星闪烁效果
-                    // z轴往后的星星闪烁更明显
                     const flickerIntensity = star.z < 0 ? Math.abs(star.z) / 500 : 0.1;
                     star.flickerPhase += star.flickerSpeed;
                     const flicker = Math.sin(star.flickerPhase) * 0.1 * flickerIntensity + 1;
                     
-                    // 景深效果（基于Z轴位置），使星星呈现远近层次感
+                    // 景深效果
                     const scale = 1 + (star.z / 1000);
-                    let opacity = star.baseOpacity;
-                    // 特殊亮星始终保持高亮度
-                    if (star.isSpecial) {
-                        opacity = 1 * flicker;
-                    } else {
-                        opacity = star.baseOpacity * (0.3 + (star.z + 500) / 700) * flicker;
-                    }
+                    let opacity = star.isSpecial ? flicker : star.baseOpacity * (0.3 + (star.z + 500) / 700) * flicker;
                     
-                    // 根据z轴位置计算旋转系数，z轴越小（越远）旋转越小，最小为0.01
+                    // 计算旋转系数
                     const rotationFactor = Math.max(0.01, (star.z + 500) / 700);
-                    // 应用变换 - 包含摄像头旋转，并确保星星始终面向屏幕
-                    star.element.style.transform = `translate(${star.x}%, ${star.y}%) rotateX(${this.cameraRotationX * rotationFactor * 180 / Math.PI}deg) rotateY(${this.cameraRotationY * rotationFactor * 180 / Math.PI}deg) translateZ(${star.z}px) rotateY(${-this.cameraRotationY * rotationFactor * 180 / Math.PI}deg) rotateX(${-this.cameraRotationX * rotationFactor * 180 / Math.PI}deg) scale(${scale})`;
-                    star.element.style.opacity = opacity;
                     
-                    // 根据深度调整泛光效果
+                    // 计算变换
+                    const transform = `translate(${star.x}%, ${star.y}%) rotateX(${this.cameraRotationX * rotationFactor * 180 / Math.PI}deg) rotateY(${this.cameraRotationY * rotationFactor * 180 / Math.PI}deg) translateZ(${star.z}px) rotateY(${-this.cameraRotationY * rotationFactor * 180 / Math.PI}deg) rotateX(${-this.cameraRotationX * rotationFactor * 180 / Math.PI}deg) scale(${scale})`;
                     const glowSize = star.size * 2 * scale;
-                    star.element.style.boxShadow = `0 0 ${glowSize}px ${glowSize * 0.5}px ${star.color}`;
-                });
+                    const boxShadow = `0 0 ${glowSize}px ${glowSize * 0.5}px ${star.color}`;
+                    
+                    updates.push({
+                        element: star.element,
+                        transform,
+                        opacity,
+                        boxShadow
+                    });
+                }
+                
+                // 批量应用更新
+                for (let i = 0; i < updates.length; i++) {
+                    const update = updates[i];
+                    update.element.style.transform = update.transform;
+                    update.element.style.opacity = update.opacity;
+                    update.element.style.boxShadow = update.boxShadow;
+                }
                 
                 this.frameCount++;
                 requestAnimationFrame((timestamp) => this.animate(timestamp));
             }
             
-            getVisibleStars() {
-                // 简单的可见性检查，只返回可能在视口内的星星
-                return this.stars.filter(star => {
-                    return star.x > -10 && star.x < 110 && star.y > -10 && star.y < 110;
-                });
-            }
+
             
             setupEventListeners() {
                 // 窗口 resize 事件（响应式设计）
@@ -1491,50 +1525,28 @@
             updateDateDisplay();
         }, 60000);
         
-        // 事件监听 - 修复移动端点击可能触发两次点击事件的BUG
-        function addTouchEvent(element, callback) {
-            // 检测是否为触摸设备
-            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-            
-            if (isTouchDevice) {
-                // 触摸设备只添加touchstart事件
-                element.addEventListener('touchstart', function(e) {
-                    // 添加触摸反馈动画
-                    element.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        element.style.transform = 'scale(1)';
-                    }, 150);
-                    callback(e);
-                });
-            } else {
-                // 非触摸设备添加click事件
-                element.addEventListener('click', callback);
-            }
+        // 事件监听
+        function addClickEvent(element, callback) {
+            element.addEventListener('click', function(e) {
+                e.stopPropagation();
+                callback(e);
+            });
         }
         
-        addTouchEvent(document.getElementById('prevDay'), function() {
+        addClickEvent(document.getElementById('prevDay'), function() {
             currentDate.setDate(currentDate.getDate() - 1);
             updateDateDisplay();
         });
         
-        addTouchEvent(document.getElementById('nextDay'), function() {
+        addClickEvent(document.getElementById('nextDay'), function() {
             currentDate.setDate(currentDate.getDate() + 1);
             updateDateDisplay();
         });
         
-        // 点击实时时间滚动到日期位置
-        addTouchEvent(document.getElementById('currentTime'), function() {
-            // 添加触摸反馈动画
-            this.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                this.style.transform = 'scale(1)';
-            }, 150);
-            
-            // 滚动到日期位置
-            const dateElement = document.getElementById('currentDateWeek');
-            if (dateElement) {
-                dateElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
+        // 点击实时时间设置为当前日期
+        addClickEvent(document.getElementById('currentTime'), function() {
+            currentDate = new Date();
+            updateDateDisplay();
         });
         
         // 日历相关变量
@@ -1546,16 +1558,18 @@
             const calendar = document.getElementById('calendar');
             calendar.innerHTML = '';
             
+            const isMobile = window.innerWidth <= 768;
+            
             // 月份导航
             const nav = document.createElement('div');
             nav.style.display = 'flex';
             nav.style.justifyContent = 'space-between';
             nav.style.alignItems = 'center';
-            nav.style.marginBottom = '15px';
+            nav.style.marginBottom = isMobile ? '10px' : '15px';
             
             const prevBtn = document.createElement('button');
             prevBtn.textContent = '‹';
-            prevBtn.style.padding = '10px 14px';
+            prevBtn.style.padding = isMobile ? '8px 12px' : '10px 14px';
             prevBtn.style.border = '1px solid rgba(255,255,255,0.1)';
             prevBtn.style.borderRadius = '8px';
             prevBtn.style.cursor = 'pointer';
@@ -1564,6 +1578,7 @@
             prevBtn.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
             prevBtn.style.position = 'relative';
             prevBtn.style.overflow = 'hidden';
+            prevBtn.style.fontSize = isMobile ? '16px' : '18px';
             prevBtn.addEventListener('click', function() {
                 currentCalendarDate.setMonth(currentCalendarDate.getMonth() - 1);
                 generateCalendar(currentCalendarDate);
@@ -1572,13 +1587,11 @@
             prevBtn.addEventListener('mouseenter', function() {
                 this.style.backgroundColor = '#3498db';
                 this.style.transform = 'scale(1.05)';
-                this.style.boxShadow = '0 4px 12px rgba(52, 152, 219, 0.3)';
             });
             
             prevBtn.addEventListener('mouseleave', function() {
                 this.style.backgroundColor = '#232323';
                 this.style.transform = 'scale(1)';
-                this.style.boxShadow = 'none';
             });
             
             const monthYear = document.createElement('h4');
@@ -1586,10 +1599,11 @@
             monthYear.style.margin = '0';
             monthYear.style.color = '#ffffff';
             monthYear.style.fontWeight = '600';
+            monthYear.style.fontSize = isMobile ? '14px' : '16px';
             
             const nextBtn = document.createElement('button');
             nextBtn.textContent = '›';
-            nextBtn.style.padding = '10px 14px';
+            nextBtn.style.padding = isMobile ? '8px 12px' : '10px 14px';
             nextBtn.style.border = '1px solid rgba(255,255,255,0.1)';
             nextBtn.style.borderRadius = '8px';
             nextBtn.style.cursor = 'pointer';
@@ -1598,6 +1612,7 @@
             nextBtn.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
             nextBtn.style.position = 'relative';
             nextBtn.style.overflow = 'hidden';
+            nextBtn.style.fontSize = isMobile ? '16px' : '18px';
             nextBtn.addEventListener('click', function() {
                 currentCalendarDate.setMonth(currentCalendarDate.getMonth() + 1);
                 generateCalendar(currentCalendarDate);
@@ -1606,13 +1621,11 @@
             nextBtn.addEventListener('mouseenter', function() {
                 this.style.backgroundColor = '#3498db';
                 this.style.transform = 'scale(1.05)';
-                this.style.boxShadow = '0 4px 12px rgba(52, 152, 219, 0.3)';
             });
             
             nextBtn.addEventListener('mouseleave', function() {
                 this.style.backgroundColor = '#232323';
                 this.style.transform = 'scale(1)';
-                this.style.boxShadow = 'none';
             });
             
             nav.appendChild(prevBtn);
@@ -1627,16 +1640,18 @@
             weekRow.style.gridTemplateColumns = 'repeat(7, 1fr)';
             weekRow.style.textAlign = 'center';
             weekRow.style.fontWeight = '600';
-            weekRow.style.marginBottom = '10px';
+            weekRow.style.marginBottom = isMobile ? '6px' : '10px';
+            weekRow.style.gap = isMobile ? '2px' : '4px';
             
             weekdays.forEach(day => {
                 const dayEl = document.createElement('div');
                 dayEl.textContent = day;
                 dayEl.style.color = '#ffffff';
-                dayEl.style.padding = '10px';
+                dayEl.style.padding = isMobile ? '6px 4px' : '10px';
                 dayEl.style.backgroundColor = '#232323';
-                dayEl.style.borderRadius = '6px';
+                dayEl.style.borderRadius = '4px';
                 dayEl.style.border = '1px solid rgba(255,255,255,0.1)';
+                dayEl.style.fontSize = isMobile ? '12px' : '14px';
                 weekRow.appendChild(dayEl);
             });
             calendar.appendChild(weekRow);
@@ -1645,10 +1660,7 @@
             const daysGrid = document.createElement('div');
             daysGrid.style.display = 'grid';
             daysGrid.style.gridTemplateColumns = 'repeat(7, 1fr)';
-            daysGrid.style.gridTemplateRows = 'repeat(6, 1fr)';
-            daysGrid.style.gap = '4px';
-            daysGrid.style.height = '220px';
-            daysGrid.style.minHeight = '220px';
+            daysGrid.style.gap = isMobile ? '2px' : '4px';
             daysGrid.style.width = '100%';
             daysGrid.style.boxSizing = 'border-box';
             
@@ -1667,10 +1679,10 @@
                 dayEl.style.justifyContent = 'center';
                 dayEl.style.color = '#666';
                 dayEl.style.border = '1px solid rgba(255,255,255,0.1)';
-                dayEl.style.borderRadius = '6px';
+                dayEl.style.borderRadius = '4px';
                 dayEl.style.aspectRatio = '1';
-                dayEl.style.minHeight = '35px';
                 dayEl.style.backgroundColor = '#1e1e1e';
+                dayEl.style.fontSize = isMobile ? '11px' : '14px';
                 daysGrid.appendChild(dayEl);
             }
             
@@ -1682,37 +1694,31 @@
                 dayEl.style.alignItems = 'center';
                 dayEl.style.justifyContent = 'center';
                 dayEl.style.border = '1px solid rgba(255,255,255,0.1)';
-                dayEl.style.borderRadius = '6px';
+                dayEl.style.borderRadius = '4px';
                 dayEl.style.cursor = 'pointer';
                 dayEl.style.aspectRatio = '1';
-                dayEl.style.minHeight = '35px';
                 dayEl.style.backgroundColor = '#232323';
                 dayEl.style.color = '#ffffff';
-                dayEl.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-                dayEl.style.position = 'relative';
+                dayEl.style.transition = 'background-color 0.2s ease';
+                dayEl.style.fontSize = isMobile ? '11px' : '14px';
                 
                 // 高亮选中的日期
                 if (i === selectedDate.getDate() && date.getMonth() === selectedDate.getMonth() && date.getFullYear() === selectedDate.getFullYear()) {
                     dayEl.style.backgroundColor = '#3498db';
                     dayEl.style.color = 'white';
-                    dayEl.style.transform = 'scale(1.1)';
-                    dayEl.style.boxShadow = '0 4px 12px rgba(52, 152, 219, 0.4)';
+                    dayEl.style.fontWeight = 'bold';
                 }
                 
                 // 鼠标悬停效果
                 dayEl.addEventListener('mouseenter', function() {
                     if (!(i === selectedDate.getDate() && date.getMonth() === selectedDate.getMonth() && date.getFullYear() === selectedDate.getFullYear())) {
                         this.style.backgroundColor = '#3498db';
-                        this.style.transform = 'scale(1.1)';
-                        this.style.boxShadow = '0 4px 12px rgba(52, 152, 219, 0.4)';
                     }
                 });
                 
                 dayEl.addEventListener('mouseleave', function() {
                     if (!(i === selectedDate.getDate() && date.getMonth() === selectedDate.getMonth() && date.getFullYear() === selectedDate.getFullYear())) {
                         this.style.backgroundColor = '#232323';
-                        this.style.transform = 'scale(1)';
-                        this.style.boxShadow = 'none';
                     }
                 });
                 
@@ -1735,10 +1741,10 @@
                 dayEl.style.justifyContent = 'center';
                 dayEl.style.color = '#666';
                 dayEl.style.border = '1px solid rgba(255,255,255,0.1)';
-                dayEl.style.borderRadius = '6px';
+                dayEl.style.borderRadius = '4px';
                 dayEl.style.aspectRatio = '1';
-                dayEl.style.minHeight = '35px';
                 dayEl.style.backgroundColor = '#1e1e1e';
+                dayEl.style.fontSize = isMobile ? '11px' : '14px';
                 daysGrid.appendChild(dayEl);
             }
             
@@ -1746,27 +1752,35 @@
         }
         
         // 点击日期显示日期选择器模态框
-        addTouchEvent(document.getElementById('currentDateWeek'), function() {
+        addClickEvent(document.getElementById('currentDateWeek'), function() {
             const modal = document.getElementById('dateModal');
-            // 设置默认选中日期为当前导航日期
             selectedDate = new Date(currentDate);
             currentCalendarDate = new Date(currentDate);
-            // 生成日历
             generateCalendar(currentCalendarDate);
-            // 显示模态框
             modal.style.display = 'block';
+            setTimeout(() => {
+                modal.style.opacity = '1';
+            }, 10);
         });
         
         // 关闭模态框
-        addTouchEvent(document.getElementById('cancelDate'), function() {
-            document.getElementById('dateModal').style.display = 'none';
+        addClickEvent(document.getElementById('cancelDate'), function() {
+            const modal = document.getElementById('dateModal');
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
         });
         
         // 确认选择日期
-        addTouchEvent(document.getElementById('confirmDate'), function() {
+        addClickEvent(document.getElementById('confirmDate'), function() {
             currentDate = selectedDate;
             updateDateDisplay();
-            document.getElementById('dateModal').style.display = 'none';
+            const modal = document.getElementById('dateModal');
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
         });
         
         // 点击模态框外部关闭
@@ -1774,15 +1788,21 @@
             const dateModal = document.getElementById('dateModal');
             const weekModal = document.getElementById('weekModal');
             if (event.target === dateModal) {
-                dateModal.style.display = 'none';
+                dateModal.style.opacity = '0';
+                setTimeout(() => {
+                    dateModal.style.display = 'none';
+                }, 300);
             }
             if (event.target === weekModal) {
-                weekModal.style.display = 'none';
+                weekModal.style.opacity = '0';
+                setTimeout(() => {
+                    weekModal.style.display = 'none';
+                }, 300);
             }
         }
         
         window.addEventListener('click', handleModalClose);
-        window.addEventListener('touchstart', handleModalClose);
+        window.addEventListener('touchend', handleModalClose);
         
         // 周数选择相关变量
         let selectedWeek = 1;
@@ -1792,27 +1812,30 @@
             const weekSelector = document.getElementById('weekSelector');
             weekSelector.innerHTML = '';
             
+            const isMobile = window.innerWidth <= 768;
+            
             // 生成1-18周的选择按钮
             const weeksGrid = document.createElement('div');
             weeksGrid.style.display = 'grid';
             weeksGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
-            weeksGrid.style.gap = '8px';
+            weeksGrid.style.gap = isMobile ? '4px' : '8px';
             weeksGrid.style.width = '100%';
             weeksGrid.style.boxSizing = 'border-box';
+            weeksGrid.style.maxHeight = isMobile ? '240px' : '300px';
             
             for (let i = 1; i <= 18; i++) {
                 const weekBtn = document.createElement('button');
                 weekBtn.textContent = `第${i}周`;
-                weekBtn.style.padding = '10px 14px';
+                weekBtn.style.padding = isMobile ? '6px 8px' : '10px 14px';
                 weekBtn.style.border = '1px solid rgba(255,255,255,0.1)';
-                weekBtn.style.borderRadius = '8px';
+                weekBtn.style.borderRadius = '6px';
                 weekBtn.style.cursor = 'pointer';
-                weekBtn.style.minWidth = '80px';
-                weekBtn.style.height = '40px';
+                weekBtn.style.minWidth = 'auto';
+                weekBtn.style.height = isMobile ? '28px' : '40px';
                 weekBtn.style.display = 'flex';
                 weekBtn.style.alignItems = 'center';
                 weekBtn.style.justifyContent = 'center';
-                weekBtn.style.fontSize = '14px';
+                weekBtn.style.fontSize = isMobile ? '11px' : '14px';
                 weekBtn.style.backgroundColor = '#232323';
                 weekBtn.style.color = '#ffffff';
                 weekBtn.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
@@ -1824,7 +1847,6 @@
                     weekBtn.style.backgroundColor = '#3498db';
                     weekBtn.style.color = 'white';
                     weekBtn.style.transform = 'scale(1.05)';
-                    weekBtn.style.boxShadow = '0 4px 12px rgba(52, 152, 219, 0.4)';
                 }
                 
                 // 鼠标悬停效果
@@ -1832,7 +1854,6 @@
                     if (i !== selectedWeek) {
                         this.style.backgroundColor = '#3498db';
                         this.style.transform = 'scale(1.05)';
-                        this.style.boxShadow = '0 4px 12px rgba(52, 152, 219, 0.4)';
                     }
                 });
                 
@@ -1840,7 +1861,6 @@
                     if (i !== selectedWeek) {
                         this.style.backgroundColor = '#232323';
                         this.style.transform = 'scale(1)';
-                        this.style.boxShadow = 'none';
                     }
                 });
                 
@@ -1857,32 +1877,38 @@
         }
         
         // 点击星期几显示周数选择器
-        addTouchEvent(document.getElementById('weekday'), function() {
+        addClickEvent(document.getElementById('weekday'), function() {
             const modal = document.getElementById('weekModal');
-            // 设置默认选中周数为当前周
             selectedWeek = calculateWeekNumber(currentDate);
-            // 生成周数选择器
             generateWeekSelector();
-            // 显示模态框
             modal.style.display = 'block';
+            setTimeout(() => {
+                modal.style.opacity = '1';
+            }, 10);
         });
         
         // 关闭周数选择器
-        addTouchEvent(document.getElementById('cancelWeek'), function() {
-            document.getElementById('weekModal').style.display = 'none';
+        addClickEvent(document.getElementById('cancelWeek'), function() {
+            const modal = document.getElementById('weekModal');
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
         });
         
         // 确认选择周数
-        addTouchEvent(document.getElementById('confirmWeek'), function() {
-            // 计算第selectedWeek周的星期一日期
-            // 学期开始日期是semesterStart（3月2日，星期一）
+        addClickEvent(document.getElementById('confirmWeek'), function() {
             const weeksDiff = selectedWeek - 1;
             const targetDate = new Date(semesterStart);
             targetDate.setDate(semesterStart.getDate() + weeksDiff * 7);
             
             currentDate = targetDate;
             updateDateDisplay();
-            document.getElementById('weekModal').style.display = 'none';
+            const modal = document.getElementById('weekModal');
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
         });
         
         // 初始化

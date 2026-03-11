@@ -720,9 +720,11 @@
             constructor() {
                 this.container = document.getElementById('starsContainer');
                 this.stars = [];
-                this.starCount = 150; // 创建150个星星粒子
-                this.specialStarCount = 13; // 13个特殊亮星
                 this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                // 手机端50个星星，桌面端150个星星
+                this.starCount = this.isMobile ? 50 : 150;
+                // 特殊亮星数量根据总星星数按比例调整
+                this.specialStarCount = this.isMobile ? 5 : 13;
                 this.lastTime = 0;
                 this.frameCount = 0;
                 this.optimized = false;
@@ -1001,18 +1003,19 @@
                     isSpecial: isSpecialStar,
                     // 闪烁效果相关
                     baseOpacity: opacity,
-                    flickerSpeed: Math.random() * 0.02 + 0.01,
+                    flickerSpeed: this.isMobile ? Math.random() * 0.01 + 0.005 : Math.random() * 0.02 + 0.01,
                     flickerPhase: Math.random() * Math.PI * 2,
                     // 特殊亮星的小幅度随机位移
                     offsetX: (Math.random() - 0.5) * 0.5,
                     offsetY: (Math.random() - 0.5) * 0.5,
-                    offsetSpeed: Math.random() * 0.01 + 0.005,
+                    offsetSpeed: this.isMobile ? Math.random() * 0.005 + 0.0025 : Math.random() * 0.01 + 0.005,
                     offsetPhaseX: Math.random() * Math.PI * 2,
                     offsetPhaseY: Math.random() * Math.PI * 2,
                     // 取消星星飘荡，只保留Z轴移动
                     vx: 0,
                     vy: 0,
-                    vz: (Math.random() - 0.5) * 0.01,
+                    // 手机端降低Z轴移动速度
+                    vz: (Math.random() - 0.5) * (this.isMobile ? 0.005 : 0.01),
                     rotationX: 0,
                     rotationY: 0
                 };
@@ -1027,7 +1030,9 @@
             
             animate(timestamp) {
                 // 控制帧率，避免过度渲染
-                if (timestamp - this.lastTime < 33) { // 约30fps
+                // 手机端20fps，桌面端30fps
+                const frameInterval = this.isMobile ? 50 : 33;
+                if (timestamp - this.lastTime < frameInterval) {
                     requestAnimationFrame((timestamp) => this.animate(timestamp));
                     return;
                 }
